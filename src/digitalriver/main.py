@@ -15,10 +15,6 @@ class DigitalriverApp(appier.WebApp):
             )
         )
 
-    def start(self):
-        appier.WebApp.start(self)
-        self.scheduler.start()
-
 if __name__ == "__main__":
     app = DigitalriverApp()
     app.serve()
