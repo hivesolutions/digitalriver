@@ -16,11 +16,11 @@
                 {% else %}
                     <a href="{{ url_for('base.index') }}">home</a>
                 {% endif %}
-               	//
-                {% if link == "customers" %}
-                    <a href="{{ url_for('droplet.list') }}" class="active">customers</a>
+                //
+                {% if link == "droplets" %}
+                    <a href="{{ url_for('droplet.list') }}" class="active">droplets</a>
                 {% else %}
-                    <a href="{{ url_for('droplet.list') }}">customers</a>
+                    <a href="{{ url_for('droplet.list') }}">droplets</a>
                 {% endif %}
                 //
                 {% if link == "about" %}

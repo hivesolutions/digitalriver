@@ -16,6 +16,19 @@ class DigitalriverApp(appier.WebApp):
                 appier_extras.AdminPart,
             )
         )
+        self.login_route = "base.signin"
+
+    @appier.exception_handler(appier.OAuthAccessError)
+    def oauth_error(self, error):
+        self.reset_session()
+        return self.redirect(
+            self.url_for("base.index")
+        )
+
+    def reset_session(self):
+        if "do.access_token" in self.session: del self.session["do.access_token"]
+        if "username" in self.session: del self.session["username"]
+        if "tokens" in self.session: del self.session["tokens"]
 
     def ensure_api(self, state = None):
         access_token = self.session.get("do.access_token", None)

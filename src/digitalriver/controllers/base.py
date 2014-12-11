@@ -12,17 +12,54 @@ class BaseController(appier.Controller):
 
     @appier.route("/", "GET")
     @appier.route("/index", "GET")
+    @appier.ensure("base")
     def index(self):
-        return self.template("index.html.tpl")
+        return self.template(
+            "index.html.tpl",
+            link = "home"
+        )
 
     @appier.route("/signin", "GET")
     def signin(self):
-        state = self.field("state")
-        if state: return self.redirect(
-            self.url_for("base.deploy"),
-            spec_url = state
+        return self.template("signin.html.tpl")
+
+    @appier.route("/signin_do", "GET")
+    def do_login(self):
+        next = self.field("next")
+        url = self.ensure_api(state = next)
+        if url: return self.redirect(url)
+        return self.redirect(
+            next or self.url_for("base.index")
         )
-        return self.template("index.html.tpl")
+
+    @appier.route("/logout", "GET")
+    def logout(self):
+        next = self.field("next")
+        self.reset_session()
+        return self.redirect(
+            next or self.url_for("base.index")
+        )
+
+    @appier.route("/about", "GET")
+    @appier.ensure("base")
+    def about(self):
+        return self.template(
+            "about.html.tpl",
+            link = "about"
+        )
+
+    @appier.route("/oauth", "GET")
+    def oauth(self):
+        code = self.field("code")
+        state = self.field("state")
+        api = self.get_api()
+        access_token = api.oauth_access(code)
+        self.session["do.access_token"] = access_token
+        self.session["username"] = api.email
+        self.session["tokens"] = ("base",)
+        return self.redirect(
+            state or self.url_for("base.index"),
+        )
 
     @appier.route("/deploy", ("GET", "POST"))
     def deploy(self):
@@ -109,22 +146,3 @@ class BaseController(appier.Controller):
             if not data: break
             sys.stdout.write(data)
             sys.stdout.flush()
-
-    @appier.route("/oauth", "GET")
-    def oauth(self):
-        code = self.field("code")
-        state = self.field("state")
-        api = self.get_api()
-        access_token = api.oauth_access(code)
-        self.session["do.access_token"] = access_token
-        return self.redirect(
-            self.url_for("base.index"),
-            state = state
-        )
-
-    @appier.exception_handler(appier.OAuthAccessError)
-    def oauth_error(self, error):
-        if "do.access_token" in self.session: del self.session["do.access_token"]
-        return self.redirect(
-            self.url_for("base.index")
-        )
