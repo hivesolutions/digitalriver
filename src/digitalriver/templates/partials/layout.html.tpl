@@ -3,7 +3,7 @@
     {% block head %}
         {% include "partials/content_type.html.tpl" %}
         {% include "partials/includes.html.tpl" %}
-        <title>Omnix / {% block title %}{% endblock %}</title>
+        <title>DigitalRiver / {% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
 <body class="ux romantic">
