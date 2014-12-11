@@ -21,7 +21,11 @@ class BaseController(appier.Controller):
 
     @appier.route("/signin", "GET")
     def signin(self):
-        return self.template("signin.html.tpl")
+        next = self.field("next")
+        return self.template(
+            "signin.html.tpl",
+            next = next
+        )
 
     @appier.route("/signin_do", "GET")
     def do_login(self):

@@ -18,7 +18,7 @@
         <tbody>
             <tr>
                 <td class="right label" width="50%">session id</td>
-                <td class="left value" width="50%">{{ session_id }}</td>
+                <td class="left value" width="50%">{{ session.sid[:32] }}</td>
             </tr>
         </tbody>
     </table>

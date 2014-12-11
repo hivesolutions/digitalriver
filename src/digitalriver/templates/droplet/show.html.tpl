@@ -1,4 +1,4 @@
-{% extends "partials/layout.html.tpl" %}
+{% extends "partials/layout_droplet.html.tpl" %}
 {% block title %}Droplets{% endblock %}
 {% block name %}{{ droplet.name }}{% endblock %}
 {% block content %}

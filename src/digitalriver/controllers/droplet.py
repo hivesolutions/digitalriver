@@ -35,5 +35,6 @@ class DropletController(appier.Controller):
         return self.template(
             "droplet/show.html.tpl",
             link = "droplets",
+            sub_link = "info",
             droplet = droplet
         )

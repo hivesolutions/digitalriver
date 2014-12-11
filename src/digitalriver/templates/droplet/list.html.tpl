@@ -2,7 +2,7 @@
 {% block title %}Droplets{% endblock %}
 {% block name %}Droplets{% endblock %}
 {% block content %}
-    <ul class="filter" data-infinite="true" data-original_value="Search Customers">
+    <ul class="filter" data-infinite="true" data-original_value="Search Droplets">
         <div class="data-source" data-url="{{ url_for('droplet.list_json') }}" data-type="json" data-timeout="0"></div>
         <li class="template clear">
             <div class="name"><a href="{{ url_for('droplet.show', id = 0) }}%[id]">%[name]</a></div>
