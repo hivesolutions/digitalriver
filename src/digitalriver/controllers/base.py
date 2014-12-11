@@ -61,8 +61,6 @@ class BaseController(appier.Controller):
 
         print(address)
 
-
-
         return self.redirect(
             self.url_for("base.index")
         )
@@ -93,7 +91,7 @@ class BaseController(appier.Controller):
         self.run_command(ssh, "apt-get -y install ruby nodejs")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/mysql.docker.sh")
-        self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")
+        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")
 
     def run_script(self, ssh, url):
         name = url.rsplit("/", 1)[1]
@@ -101,16 +99,13 @@ class BaseController(appier.Controller):
         self.run_command(ssh, "chmod +x %s && ./%s" % (name, name))
 
     def run_command(self, ssh, command):
-        _stdin, stdout, stderr = ssh.exec_command(command)
+        _stdin, stdout, _stderr = ssh.exec_command(command + " 2>&1")
 
-        data_out = stdout.readlines()
-        data_err = stderr.readlines()
-
-        stream_out = sys.stdout
-        stream_err = sys.stderr
-
-        for line in data_out: stream_out.write(line)
-        for line in data_err: stream_err.write(line)
+        while True:
+            data = stdout.readline()
+            if not data: break
+            sys.stdout.write(data)
+            sys.stdout.flush()
 
     @appier.route("/oauth", "GET")
     def oauth(self):
