@@ -1,7 +1,7 @@
 {% extends "partials/layout_simple.html.tpl" %}
 {% block htitle %}{{ own.description }} / {% block title %}{% endblock %}{% endblock %}
 {% block links %}
-	{% if link == "home" %}
+    {% if link == "home" %}
         <a href="{{ url_for('base.index') }}" class="active">home</a>
     {% else %}
         <a href="{{ url_for('base.index') }}">home</a>
