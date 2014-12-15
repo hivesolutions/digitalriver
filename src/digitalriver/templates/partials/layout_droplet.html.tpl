@@ -7,5 +7,11 @@
         {% else %}
             <a href="{{ url_for('droplet.show', id = droplet.id) }}">info</a>
         {% endif %}
+        //
+        {% if sub_link == "provision" %}
+            <a href="{{ url_for('droplet.provision', id = droplet.id) }}" class="active">provision</a>
+        {% else %}
+            <a href="{{ url_for('droplet.provision', id = droplet.id) }}">provision</a>
+        {% endif %}
     </div>
 {% endblock %}

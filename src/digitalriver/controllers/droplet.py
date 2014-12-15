@@ -40,3 +40,24 @@ class DropletController(appier.Controller):
             sub_link = "info",
             droplet = droplet
         )
+
+    @appier.route("/droplets/<int:id>/provision", "GET")
+    @appier.ensure("base")
+    def provision(self, id):
+        url = self.ensure_api()
+        if url: return self.redirect(url)
+        api = self.get_api()
+        droplet = api.get_droplet(id)
+        return self.template(
+            "droplet/provision.html.tpl",
+            link = "droplets",
+            sub_link = "provision",
+            droplet = droplet,
+            provision = {},
+            errors = {}
+        )
+
+    @appier.route("/droplets/<int:id>/provision", "POST")
+    @appier.ensure("base")
+    def do_provision(self, id):
+        pass
