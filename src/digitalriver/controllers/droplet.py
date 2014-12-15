@@ -24,7 +24,7 @@ class DropletController(appier.Controller):
         start = self.field("start_record", 0, cast = int)
         count = self.field("list_droplets", 10, cast = int)
         droplets = api.list_droplets()
-        droplets = droplets["droplets"][start:start + count + 1]
+        droplets = droplets["droplets"][start:start + count]
         return droplets
 
     @appier.route("/droplets/<int:id>", "GET")
