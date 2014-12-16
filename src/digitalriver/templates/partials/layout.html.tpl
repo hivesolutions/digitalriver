@@ -13,6 +13,12 @@
         <a href="{{ url_for('droplet.list') }}">droplets</a>
     {% endif %}
     //
+    {% if link == "provisions" %}
+        <a href="{{ url_for('provision.list') }}" class="active">provisions</a>
+    {% else %}
+        <a href="{{ url_for('provision.list') }}">provisions</a>
+    {% endif %}
+    //
     {% if link == "about" %}
         <a href="{{ url_for('base.about') }}" class="active">about</a>
     {% else %}
