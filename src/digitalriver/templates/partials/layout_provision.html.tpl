@@ -8,7 +8,7 @@
             <a href="{{ url_for('provision.show', id = provision.id) }}">info</a>
         {% endif %}
         //
-        {% if sub_link == "status" %}
+        {% if sub_link == "log" %}
             <a href="{{ url_for('provision.log', id = provision.id) }}" class="active">log</a>
         {% else %}
             <a href="{{ url_for('provision.log', id = provision.id) }}">log</a>
