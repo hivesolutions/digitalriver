@@ -21,3 +21,14 @@ class ProvisionController(appier.Controller):
         object = appier.get_object(alias = True, find = True)
         provisions = digitalriver.Provision.find(map = True, **object)
         return provisions
+
+    @appier.route("/provisions/<str:id>", "GET")
+    @appier.ensure("base")
+    def show(self, id):
+        provision = digitalriver.Provision.get(id = id)
+        return self.template(
+            "provision/show.html.tpl",
+            link = "provisions",
+            sub_link = "info",
+            provision = provision
+        )
