@@ -103,8 +103,6 @@ class BaseController(appier.Controller):
         ipv4 = networks["v4"][0]
         address = ipv4["ip_address"]
 
-        print(address)
-
         return self.redirect(
             self.url_for("base.index")
         )
@@ -138,17 +136,3 @@ class BaseController(appier.Controller):
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/mysql.docker.sh")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")
-
-    def run_script(self, ssh, url):
-        name = url.rsplit("/", 1)[1]
-        self.run_command(ssh, "wget %s" % url)
-        self.run_command(ssh, "chmod +x %s && ./%s" % (name, name))
-
-    def run_command(self, ssh, command):
-        _stdin, stdout, _stderr = ssh.exec_command(command + " 2>&1")
-
-        while True:
-            data = stdout.readline()
-            if not data: break
-            sys.stdout.write(data)
-            sys.stdout.flush()
