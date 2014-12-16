@@ -42,6 +42,10 @@ class DigitalriverApp(appier.WebApp):
         api.access_token = access_token
         return api
 
+    def get_deployer(self):
+        import digitalriver.util
+        return digitalriver.util.Deployer()
+
     def _get_api(self):
         return digitalocean.Api(
             client_id = appier.conf("DO_ID"),

@@ -3,16 +3,22 @@
 
 import sys
 
+import appier
+
 try: import paramiko
 except: paramiko = None
 
 class Deployer(object):
 
     def __init__(self, address, username = None, password = None, id_rsa_path = None):
-        self.address = address
-        self.username = username
-        self.password = password
-        self.id_rsa_path = id_rsa_path
+        self.address = appier.conf("DR_ADDRESS", None)
+        self.username = appier.conf("DR_USERNAME", None)
+        self.password = appier.conf("DR_PASSWORD", None)
+        self.id_rsa_path = appier.conf("DR_KEY_PATH", None)
+        self.address = address or self.address
+        self.username = username or self.username
+        self.password = password or self.password
+        self.id_rsa_path = id_rsa_path or self.id_rsa_path
 
     def deploy_url(self, url):
         # creates the proper ssh client with the remote host
