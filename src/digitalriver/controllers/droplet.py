@@ -3,6 +3,8 @@
 
 import appier
 
+import digitalriver
+
 class DropletController(appier.Controller):
 
     @appier.route("/droplets", "GET")
@@ -43,7 +45,7 @@ class DropletController(appier.Controller):
 
     @appier.route("/droplets/<int:id>/provision", "GET")
     @appier.ensure("base")
-    def provision(self, id):
+    def new_provision(self, id):
         url = self.ensure_api()
         if url: return self.redirect(url)
         api = self.get_api()
@@ -59,16 +61,20 @@ class DropletController(appier.Controller):
 
     @appier.route("/droplets/<int:id>/provision", "POST")
     @appier.ensure("base")
-    def do_provision(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)    #@todo must implement this under a model (called provision)
-        networks = droplet["networks"]
-        ipv4 = networks["v4"][0]
-        address = ipv4["ip_address"]
-        deployer = self.get_deployer(address = address)
-        deployer.deploy_url("tobias") #@this is still not working
+    def create_provision(self, id):
+        provision = digitalriver.Provision.new()
+        try: provision.save()
+        except appier.ValidationError as error:
+            url = self.ensure_api()
+            if url: return self.redirect(url)
+            api = self.get_api()
+            droplet = api.get_droplet(id)
+            return self.template(
+                "droplet/provision.html.tpl",
+                droplet = droplet,
+                provision = error.model,
+                errors = error.errors
+            )
         return self.redirect(
             self.url_for("droplet.show", id = id)
         )

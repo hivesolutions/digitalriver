@@ -2,18 +2,20 @@
 {% block title %}Droplets{% endblock %}
 {% block name %}Droplet #{{ droplet.id }}{% endblock %}
 {% block content %}
-    <form action="{{ url_for('droplet.do_provision', id = droplet.id) }}" method="post" class="form">
+    <form action="{{ url_for('droplet.create_provision', id = droplet.id) }}" method="post" class="form">
+        <input type="hidden" name="droplet_id" value="{{ droplet.id }}" />
+        <input type="hidden" name="droplet_address" value="{{ droplet.networks.v4[0].ip_address }}" />
         <div class="label">
             <label>Name</label>
         </div>
          <div class="input">
-            <input class="text-field" name="image" value="{{ droplet.name }}" data-disabled="1" />
+            <input class="text-field" value="{{ droplet.name }}" data-disabled="1" />
         </div>
         <div class="label">
             <label>Image</label>
         </div>
          <div class="input">
-            <input class="text-field" name="image" value="{{ droplet.image.name }}" data-disabled="1" />
+            <input class="text-field" value="{{ droplet.image.name }}" data-disabled="1" />
         </div>
         <div class="label">
             <label>URL</label>

@@ -9,9 +9,9 @@
         {% endif %}
         //
         {% if sub_link == "provision" %}
-            <a href="{{ url_for('droplet.provision', id = droplet.id) }}" class="active">provision</a>
+            <a href="{{ url_for('droplet.new_provision', id = droplet.id) }}" class="active">provision</a>
         {% else %}
-            <a href="{{ url_for('droplet.provision', id = droplet.id) }}">provision</a>
+            <a href="{{ url_for('droplet.new_provision', id = droplet.id) }}">provision</a>
         {% endif %}
     </div>
 {% endblock %}
