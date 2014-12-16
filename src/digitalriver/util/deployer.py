@@ -8,9 +8,10 @@ import appier
 try: import paramiko
 except: paramiko = None
 
-class Deployer(object):
+class Deployer(appier.Observable):
 
     def __init__(self, address = None, username = None, password = None, id_rsa_path = None):
+        appier.Observable.__init__(self)
         self.address = appier.conf("DR_ADDRESS", None)
         self.username = appier.conf("DR_USERNAME", None)
         self.password = appier.conf("DR_PASSWORD", None)
@@ -55,3 +56,4 @@ class Deployer(object):
             if not data: break
             sys.stdout.write(data)
             sys.stdout.flush()
+            self.trigger("stdout", data)
