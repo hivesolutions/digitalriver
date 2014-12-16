@@ -6,6 +6,7 @@
 		<project>appier</project>
 		<project>appier_extras</project>
 		<project>digitalocean_api</project>
+		<project>pushi</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
