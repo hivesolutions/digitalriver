@@ -6,12 +6,21 @@ import json
 
 import appier
 
+import digitalriver
+
 try: import paramiko
 except: paramiko = None
 
 class Deployer(appier.Observable):
 
-    def __init__(self, address = None, username = None, password = None, id_rsa_path = None):
+    def __init__(
+        self,
+        address = None,
+        username = None,
+        password = None,
+        id_rsa_path = None,
+        instance_c = None
+    ):
         appier.Observable.__init__(self)
         self.address = appier.conf("DR_ADDRESS", None)
         self.username = appier.conf("DR_USERNAME", None)
@@ -21,6 +30,7 @@ class Deployer(appier.Observable):
         self.username = username or self.username
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
+        self.instance_c = instance_c or digitalriver.Instance
         self.ssh = None
 
     def deploy_url(self, url):
@@ -33,17 +43,24 @@ class Deployer(appier.Observable):
 
         self.deploy_torus(data)
 
-    def deploy_torus(self, data):
-        pass
+    def deploy_torus(self, url, data):
+        instance = self.get_instance()
+        build = data["build"]
+        dependencies = data.get("depends", [])
 
-        #self.run_command("apt-get update")
-        #self.run_command("apt-get -y upgrade")
-        #self.run_command("apt-get -y dist-upgrade")
-        #self.run_command("apt-get -y autoremove")
-        #self.run_command("apt-get -y install ruby nodejs")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/mysql.docker.sh")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")
+        for dependency in dependencies:
+            if instance.has_provision(dependency): continue
+            self.deploy_url(dependency)
+
+        self.run_base()
+        self.run_script(build)
+
+        instance.provisions.append(url)
+        instance.save()
+
+    def run_base(self):
+        self.run_command("apt-get update")
+        self.run_command("apt-get -y install ruby nodejs")
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
@@ -60,6 +77,12 @@ class Deployer(appier.Observable):
             sys.stdout.write(data)
             sys.stdout.flush()
             self.trigger("stdout", data)
+
+    def get_instance(self):
+        instance = self.instance_c.get(address = self.address, raise_e = False)
+        if instance: return instance
+        instance = self.instance_c(address = self.address)
+        return instance
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
