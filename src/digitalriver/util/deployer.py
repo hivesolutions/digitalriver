@@ -41,14 +41,18 @@ class Deployer(appier.Observable):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-        self.deploy_torus(data)
+        self.deploy_torus(url, data)
 
     def deploy_torus(self, url, data):
         instance = self.get_instance()
+        if instance.has_provision(url): return
+
         build = data["build"]
+        build = self._to_absolute(url, build)
         dependencies = data.get("depends", [])
 
         for dependency in dependencies:
+            dependency = self._to_absolute(url, dependency)
             if instance.has_provision(dependency): continue
             self.deploy_url(dependency)
 
@@ -64,8 +68,10 @@ class Deployer(appier.Observable):
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
-        self.run_command("wget %s" % url)
-        self.run_command("chmod +x %s && ./%s" % (name, name))
+        self.run_command("mkdir -p /tmp/torus")
+        self.run_command("cd /tmp/torus && wget %s" % url)
+        self.run_command("cd /tmp/torus && chmod +x %s && ./%s" % (name, name))
+        self.run_command("rm -rf /tmp/torus")
 
     def run_command(self, command):
         ssh = self.get_ssh()
@@ -81,7 +87,7 @@ class Deployer(appier.Observable):
     def get_instance(self):
         instance = self.instance_c.get(address = self.address, raise_e = False)
         if instance: return instance
-        instance = self.instance_c(address = self.address)
+        instance = self.instance_c(address = self.address, provisions = [])
         return instance
 
     def get_ssh(self, force = False):
@@ -101,3 +107,9 @@ class Deployer(appier.Observable):
             key_filename = self.id_rsa_path
         )
         return self.ssh
+
+    def _to_absolute(self, base, url):
+        is_absolute = url.startswith("http://") or url.startswith("https://")
+        if is_absolute: return url
+        base = base.rsplit("/", 1)[0]
+        return base + "/" + url
