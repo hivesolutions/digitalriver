@@ -33,7 +33,9 @@ class Provision(base.DRBase):
         immutable = True
     )
 
-    log = appier.field()
+    log = appier.field(
+        type = list
+    )
 
     @classmethod
     def validate(cls):
@@ -69,10 +71,21 @@ class Provision(base.DRBase):
         deployer.deploy_url(self.url)
 
     def create_logger(self):
+        data_logger = self.create_data()
         pushi_logger = self.create_pushi()
 
         def logger(message):
+            data_logger(message)
             pushi_logger(message)
+
+        return logger
+
+    def create_data(self):
+
+        def logger(message):
+            provision = Provision.get(id = self.id)
+            provision.log.append(message)
+            provision.save()
 
         return logger
 
