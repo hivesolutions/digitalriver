@@ -12,7 +12,10 @@
                         baseUrl : url
                     });
 
-            pushi.subscribe(channel);
+            pushi.bind("connect", function(event) {
+                pushi.subscribe(channel);
+            });
+
             pushi.bind("notification", function(event, data, channel) {
                         console.info(data);
                     });
