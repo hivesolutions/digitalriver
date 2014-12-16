@@ -41,5 +41,6 @@ class ProvisionController(appier.Controller):
             "provision/log.html.tpl",
             link = "provisions",
             sub_link = "log",
+            style = "wide",
             provision = provision
         )

@@ -18,12 +18,24 @@
 
             pushi.bind("stdout", function(event, data, channel) {
                         element.append("<div class=\"line\">" + data + "</div>");
+                        scrollBottom(element);
                     });
 
             // if the current pushi connection for the url is already connected
             // then the subscription process is executed immediately
             var isConnected = pushi.state == "connected";
             isConnected && pushi.subscribe(channel);
+
+            // schedules a next tick operation to scroll the current element down
+            // so that the proper initial log contents are display properly
+            setTimeout(function() {
+                        scrollBottom(element);
+                    });
+        };
+
+        var scrollBottom = function(element) {
+            var scrollHeight = element[0].scrollHeight;
+            element.scrollTop(scrollHeight);
         };
 
         // iterates over the complete set of element in the
