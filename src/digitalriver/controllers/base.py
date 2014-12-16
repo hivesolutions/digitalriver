@@ -105,33 +105,3 @@ class BaseController(appier.Controller):
         return self.redirect(
             self.url_for("base.index")
         )
-
-    @appier.route("/test", ("GET", "POST"))
-    def test(self):
-        address = self.field("address", mandatory = True)
-        username = self.field("username")
-        password = self.field("password")
-        id_rsa_path = self.field("id_rsa_path")
-
-        import paramiko
-
-        # creates the proper ssh client with the remote host
-        # adding the proper policies and then runs the connection
-        # with the provided credentials and key file values
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(
-            address,
-            username = username,
-            password = password,
-            key_filename = id_rsa_path
-        )
-
-        self.run_command(ssh, "apt-get update")
-        #self.run_command(ssh, "apt-get -y upgrade")
-        #self.run_command(ssh, "apt-get -y dist-upgrade")
-        #self.run_command(ssh, "apt-get -y autoremove")
-        self.run_command(ssh, "apt-get -y install ruby nodejs")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/mysql.docker.sh")
-        #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")

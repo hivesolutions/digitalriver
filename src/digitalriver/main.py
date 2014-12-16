@@ -42,9 +42,9 @@ class DigitalriverApp(appier.WebApp):
         api.access_token = access_token
         return api
 
-    def get_deployer(self):
+    def get_deployer(self, *args, **kwargs):
         import digitalriver.util
-        return digitalriver.util.Deployer()
+        return digitalriver.util.Deployer(*args, **kwargs)
 
     def _get_api(self):
         return digitalocean.Api(
