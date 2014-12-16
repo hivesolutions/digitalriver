@@ -2,7 +2,7 @@
 {% block title %}Provisions{% endblock %}
 {% block name %}{{ provision.id }}{% endblock %}
 {% block content %}
-    <div class="log" data-key="a1e0192596fbbf740c41fffd5226948901f02e2a085f5427f1f47a6b4718b59d"
+    <div class="log" data-key="c4669efec89dfb6bddcbcbec5a259fe6adfd4f2cd1dff8b10a54ca1fca25a365"
          data-channel="{{ provision.id }}">
     </div>
 {% endblock %}
