@@ -10,7 +10,7 @@ except: paramiko = None
 
 class Deployer(object):
 
-    def __init__(self, address, username = None, password = None, id_rsa_path = None):
+    def __init__(self, address = None, username = None, password = None, id_rsa_path = None):
         self.address = appier.conf("DR_ADDRESS", None)
         self.username = appier.conf("DR_USERNAME", None)
         self.password = appier.conf("DR_PASSWORD", None)

@@ -60,4 +60,15 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/provision", "POST")
     @appier.ensure("base")
     def do_provision(self, id):
-        pass
+        url = self.ensure_api()
+        if url: return self.redirect(url)
+        api = self.get_api()
+        droplet = api.get_droplet(id)    #@todo must implement this under a model (called provision)
+        networks = droplet["networks"]
+        ipv4 = networks["v4"][0]
+        address = ipv4["ip_address"]
+        deployer = self.get_deployer(address = address)
+        deployer.deploy_url("tobias") #@this is still not working
+        return self.redirect(
+            self.url_for("droplet.show", id = id)
+        )
