@@ -118,9 +118,11 @@ class BaseController(appier.Controller):
 
         import paramiko
 
+        # creates the proper ssh client with the remote host
+        # adding the proper policies and then runs the connection
+        # with the provided credentials and key file values
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
         ssh.connect(
             address,
             username = username,
