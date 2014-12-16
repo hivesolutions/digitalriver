@@ -31,14 +31,16 @@ class Deployer(appier.Observable):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-        print(data)
+        self.deploy_torus(data)
 
-    def deploy_torus(self, torus):
-        self.run_command("apt-get update")
+    def deploy_torus(self, data):
+        pass
+
+        #self.run_command("apt-get update")
         #self.run_command("apt-get -y upgrade")
         #self.run_command("apt-get -y dist-upgrade")
         #self.run_command("apt-get -y autoremove")
-        self.run_command("apt-get -y install ruby nodejs")
+        #self.run_command("apt-get -y install ruby nodejs")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/mysql.docker.sh")
         #self.run_script(ssh, "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/redis.docker.sh")
