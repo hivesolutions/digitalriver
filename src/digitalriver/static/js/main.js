@@ -13,12 +13,17 @@
                     });
 
             pushi.bind("connect", function(event) {
-                pushi.subscribe(channel);
-            });
+                        pushi.subscribe(channel);
+                    });
 
             pushi.bind("stdout", function(event, data, channel) {
                         console.info(data);
                     });
+
+            // if the current pushi connection for the url is already connected
+            // then the subscription process is executed immediately
+            var isConnected = pushi.state == "connected";
+            isConnected && pushi.subscribe(channel);
         };
 
         // iterates over the complete set of element in the
