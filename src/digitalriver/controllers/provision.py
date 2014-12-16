@@ -32,3 +32,14 @@ class ProvisionController(appier.Controller):
             sub_link = "info",
             provision = provision
         )
+
+    @appier.route("/provisions/<str:id>/log", "GET")
+    @appier.ensure("base")
+    def log(self, id):
+        provision = digitalriver.Provision.get(id = id)
+        return self.template(
+            "provision/log.html.tpl",
+            link = "provisions",
+            sub_link = "log",
+            provision = provision
+        )

@@ -9,9 +9,9 @@
         {% endif %}
         //
         {% if sub_link == "status" %}
-            <a href="#" class="active">log</a>
+            <a href="{{ url_for('provision.log', id = provision.id) }}" class="active">log</a>
         {% else %}
-            <a href="#">log</a>
+            <a href="{{ url_for('provision.log', id = provision.id) }}">log</a>
         {% endif %}
     </div>
 {% endblock %}
