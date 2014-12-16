@@ -17,7 +17,7 @@
                     });
 
             pushi.bind("stdout", function(event, data, channel) {
-                        console.info(data);
+                        element.append("<div class=\"line\">" + data + "</div>");
                     });
 
             // if the current pushi connection for the url is already connected
