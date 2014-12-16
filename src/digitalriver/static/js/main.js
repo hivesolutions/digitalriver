@@ -38,7 +38,7 @@
 
         // retrieves the reference to the currently matched log
         // objects and starts the log extension in all of them
-        var log = matchedObject.filter(".log");
+        var log = jQuery(".log", matchedObject);
         log.ulog();
     };
 })(jQuery);
