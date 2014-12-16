@@ -16,7 +16,7 @@
                 pushi.subscribe(channel);
             });
 
-            pushi.bind("notification", function(event, data, channel) {
+            pushi.bind("stdout", function(event, data, channel) {
                         console.info(data);
                     });
         };
