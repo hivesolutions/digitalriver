@@ -59,7 +59,7 @@ class Deployer(appier.Observable):
         self.run_base()
         self.run_script(build)
 
-        instance.provisions.append(url)
+        instance.features.append(url)
         instance.save()
 
     def run_base(self):

@@ -24,5 +24,16 @@ class Instance(base.DRBase):
         )
     )
 
+    @classmethod
+    def setup(cls):
+        super(base.DRBase, cls).setup()
+        provision.Provision.bind_g("post_create", cls.provision_post_create)
+
+    @classmethod
+    def provision_post_create(cls, ctx):
+        instance = Instance.singleton(address = ctx.droplet_address)
+        instance.provisions.append(self)
+        instance.save()
+
     def has_provision(self, name):
         return name in self.features
