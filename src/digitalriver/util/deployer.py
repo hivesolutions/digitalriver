@@ -13,6 +13,10 @@ except: paramiko = None
 
 class Deployer(appier.Observable):
 
+    BASE_PACKAGES = ("ruby", "nodejs")
+    """ Sequence containing the various packages that are considered
+    to be foundation and that should always be installed """
+
     def __init__(
         self,
         address = None,
@@ -58,7 +62,6 @@ class Deployer(appier.Observable):
 
         self.run_base()
         self.run_script(build)
-        self.start_torus(url, data)
 
         instance.features.append(url)
         instance.save()
@@ -74,8 +77,9 @@ class Deployer(appier.Observable):
         self.run_command(stop)
 
     def run_base(self):
+        base_s = " ".join(Deployer.BASE_PACKAGES)
         self.run_command("apt-get update")
-        self.run_command("apt-get -y install ruby nodejs")
+        self.run_command("apt-get -y install %s" % base_s)
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
@@ -96,10 +100,7 @@ class Deployer(appier.Observable):
             self.trigger("stdout", data)
 
     def get_instance(self):
-        instance = self.instance_c.get(address = self.address, raise_e = False)
-        if instance: return instance
-        instance = self.instance_c(address = self.address, provisions = [])
-        return instance
+        return self.instance_c.singleton(address = self.address)
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
