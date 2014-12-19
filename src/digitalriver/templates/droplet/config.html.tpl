@@ -4,7 +4,7 @@
 {% block content %}
  	<form action="{{ url_for('droplet.do_config', id = droplet.id) }}" method="post" class="form">
         <table class="table table-edit" data-error="{{ errors.prices }}">
-            <input name="address" type="hidden" class="table-empty-field" value="{{ droplet.networks.v4[0].ip_address }}" />
+            <input name="address" type="hidden" value="{{ droplet.networks.v4[0].ip_address }}" />
             <thead>
                 <tr>
                     <th data-width="270">Name</th>
