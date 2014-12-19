@@ -13,6 +13,10 @@ class Instance(base.DRBase):
         default = True
     )
 
+    config = appier.field(
+        type = list
+    )
+
     features = appier.field(
         type = list
     )
@@ -34,6 +38,14 @@ class Instance(base.DRBase):
         instance = Instance.singleton(address = ctx.droplet_address)
         instance.provisions.append(ctx)
         instance.save()
+        
+    @classmethod
+    def by_droplet(cls, droplet):
+        address = droplet["networks"]["v4"][0]["ip_address"]
+        return cls.singleton(address = address)
+
+    def has_feature(self, name):
+        return hasattr(self, "features") and name in self.features
 
     def has_provision(self, name):
-        return hasattr(self, "features") and name in self.features
+        return self.has_feature(name)

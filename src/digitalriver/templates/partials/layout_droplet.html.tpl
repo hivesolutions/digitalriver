@@ -8,6 +8,12 @@
             <a href="{{ url_for('droplet.show', id = droplet.id) }}">info</a>
         {% endif %}
         //
+        {% if sub_link == "config" %}
+            <a href="{{ url_for('droplet.config', id = droplet.id) }}" class="active">config</a>
+        {% else %}
+            <a href="{{ url_for('droplet.config', id = droplet.id) }}">config</a>
+        {% endif %}
+        //
         {% if sub_link == "provision" %}
             <a href="{{ url_for('droplet.new_provision', id = droplet.id) }}" class="active">provision</a>
         {% else %}
