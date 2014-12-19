@@ -36,13 +36,16 @@ class Instance(base.DRBase):
     @classmethod
     def provision_post_create(cls, ctx):
         instance = Instance.singleton(address = ctx.droplet_address)
+        instance.address = ctx.droplet_address
         instance.provisions.append(ctx)
         instance.save()
         
     @classmethod
     def by_droplet(cls, droplet):
         address = droplet["networks"]["v4"][0]["ip_address"]
-        return cls.singleton(address = address)
+        instance = cls.singleton(address = address)
+        instance.address = address
+        return instance
 
     def has_feature(self, name):
         return hasattr(self, "features") and name in self.features

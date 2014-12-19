@@ -63,14 +63,15 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/config", "POST")
     @appier.ensure("base")
     def do_config(self, id):
-        instance = digitalriver.Instance.singleton()
+        address = self.field("address")
+        instance = digitalriver.Instance.singleton(address = address)
+        instance.apply()
         try: instance.save()
         except appier.ValidationError as error:
             url = self.ensure_api()
             if url: return self.redirect(url)
             api = self.get_api()
             droplet = api.get_droplet(id)
-            instance = digitalriver.Instance.by_droplet(droplet)
             return self.template(
                 "droplet/config.html.tpl",
                 link = "droplets",
