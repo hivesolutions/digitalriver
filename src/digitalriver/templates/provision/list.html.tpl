@@ -5,7 +5,7 @@
     <ul class="filter" data-infinite="true" data-original_value="Search Provisions">
         <div class="data-source" data-url="{{ url_for('provision.list_json') }}" data-type="json" data-timeout="0"></div>
         <li class="template clear">
-            <div class="name"><a href="{{ url_for('provision.show', id = '') }}%[id]">%[id]</a></div>
+            <div class="name"><a href="{{ url_for('provision.show', pid = '') }}%[pid]">%[pid]</a></div>
             <div class="description">Droplet #%[droplet_id]</div>
         </li>
         <div class="filter-no-results quote">

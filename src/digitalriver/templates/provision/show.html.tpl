@@ -1,8 +1,8 @@
 {% extends "partials/layout_provision.html.tpl" %}
 {% block title %}Provisions{% endblock %}
-{% block name %}{{ provision.id }}{% endblock %}
+{% block name %}{{ provision.pid }}{% endblock %}
 {% block content %}
-    <div class="quote">{{ provision.id }}</div>
+    <div class="quote">{{ provision.pid }}</div>
     <div class="separator-horizontal"></div>
     <table>
         <tbody>

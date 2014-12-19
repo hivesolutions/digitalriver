@@ -58,9 +58,20 @@ class Deployer(appier.Observable):
 
         self.run_base()
         self.run_script(build)
+        self.start_torus(url, data)
 
         instance.features.append(url)
         instance.save()
+
+    def start_torus(self, url, data):
+        start = data.get("start", None)
+        if not start: return
+        self.run_command(start)
+
+    def stop_torus(self, url, data):
+        stop = data.get("stop", None)
+        if not stop: return
+        self.run_command(stop)
 
     def run_base(self):
         self.run_command("apt-get update")

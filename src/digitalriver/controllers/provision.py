@@ -22,10 +22,10 @@ class ProvisionController(appier.Controller):
         provisions = digitalriver.Provision.find(map = True, **object)
         return provisions
 
-    @appier.route("/provisions/<str:id>", "GET")
+    @appier.route("/provisions/<str:pid>", "GET")
     @appier.ensure("base")
-    def show(self, id):
-        provision = digitalriver.Provision.get(id = id)
+    def show(self, pid):
+        provision = digitalriver.Provision.get(pid = pid)
         return self.template(
             "provision/show.html.tpl",
             link = "provisions",
@@ -33,10 +33,10 @@ class ProvisionController(appier.Controller):
             provision = provision
         )
 
-    @appier.route("/provisions/<str:id>/log", "GET")
+    @appier.route("/provisions/<str:pid>/log", "GET")
     @appier.ensure("base")
-    def log(self, id):
-        provision = digitalriver.Provision.get(id = id)
+    def log(self, pid):
+        provision = digitalriver.Provision.get(pid = pid)
         return self.template(
             "provision/log.html.tpl",
             link = "provisions",

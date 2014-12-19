@@ -76,5 +76,5 @@ class DropletController(appier.Controller):
                 errors = error.errors
             )
         return self.redirect(
-            self.url_for("provision.log", id = provision.id)
+            self.url_for("provision.log", pid = provision.pid)
         )
