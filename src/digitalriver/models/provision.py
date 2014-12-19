@@ -11,7 +11,7 @@ from . import base
 
 class Provision(base.DRBase):
 
-    id = appier.field(
+    pid = appier.field(
         index = True,
         immutable = True,
         default = True
@@ -33,6 +33,10 @@ class Provision(base.DRBase):
         immutable = True
     )
 
+    config = appier.field(
+        type = dict
+    )
+
     log = appier.field(
         type = list
     )
@@ -40,8 +44,8 @@ class Provision(base.DRBase):
     @classmethod
     def validate(cls):
         return super(Provision, cls).validate() + [
-            appier.not_null("id"),
-            appier.not_empty("id"),
+            appier.not_null("pid"),
+            appier.not_empty("pid"),
 
             appier.not_null("droplet_id"),
 
@@ -54,7 +58,7 @@ class Provision(base.DRBase):
 
     def pre_validate(self):
         base.DRBase.pre_validate(self)
-        self.id = str(uuid.uuid4())
+        self.pid = str(uuid.uuid4())
 
     def post_create(self):
         base.DRBase.post_create(self)
@@ -83,7 +87,7 @@ class Provision(base.DRBase):
     def create_data(self):
 
         def logger(message):
-            provision = Provision.get(id = self.id)
+            provision = Provision.get(pid = self.pid)
             provision.log.append(message)
             provision.save()
 
@@ -92,13 +96,13 @@ class Provision(base.DRBase):
     def create_pushi(self):
 
         def on_connect(connection):
-            connection.subscribe_pushi(self.id)
+            connection.subscribe_pushi(self.pid)
 
         client_key = appier.conf("PUSHI_KEY")
         client = pushi.PushiClient(client_key = client_key)
         connection = client.connect_pushi(callback = on_connect)
 
         def logger(message):
-            connection.send_channel("stdout", message, self.id, persist = False)
+            connection.send_channel("stdout", message, self.pid, persist = False)
 
         return logger

@@ -4,6 +4,7 @@
 import appier
 
 from . import base
+from . import provision
 
 class Instance(base.DRBase):
 
@@ -12,9 +13,16 @@ class Instance(base.DRBase):
         default = True
     )
 
-    provisions = appier.field(
+    features = appier.field(
         type = list
     )
 
+    provisions = appier.field(
+        type = appier.references(
+            provision.Provision,
+            name = "pid"
+        )
+    )
+
     def has_provision(self, name):
-        return name in self.provisions
+        return name in self.features
