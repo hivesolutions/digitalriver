@@ -36,4 +36,4 @@ class Instance(base.DRBase):
         instance.save()
 
     def has_provision(self, name):
-        return name in self.features
+        return hasattr(self, "features") and name in self.features
