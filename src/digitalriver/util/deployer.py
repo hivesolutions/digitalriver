@@ -12,6 +12,10 @@ try: import paramiko
 except: paramiko = None
 
 class Deployer(appier.Observable):
+    
+    BASE_DIRECTORY = "/torus"
+    """ The base directory where the instance configuration of the
+    torus infra-structure will be positioned for execution """
 
     BASE_PACKAGES = ("ruby", "nodejs")
     """ Sequence containing the various packages that are considered
@@ -78,6 +82,7 @@ class Deployer(appier.Observable):
 
     def run_base(self):
         base_s = " ".join(Deployer.BASE_PACKAGES)
+        self.run_command("mkdir -p %s" % Deployer.BASE_DIRECTORY)
         self.run_command("apt-get update")
         self.run_command("apt-get -y install %s" % base_s)
 
