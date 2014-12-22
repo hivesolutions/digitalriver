@@ -12,7 +12,7 @@ try: import paramiko
 except: paramiko = None
 
 class Deployer(appier.Observable):
-    
+
     BASE_DIRECTORY = "/torus"
     """ The base directory where the instance configuration of the
     torus infra-structure will be positioned for execution """
@@ -27,7 +27,8 @@ class Deployer(appier.Observable):
         username = None,
         password = None,
         id_rsa_path = None,
-        instance_c = None
+        instance_c = None,
+        environment = None
     ):
         appier.Observable.__init__(self)
         self.address = appier.conf("DR_ADDRESS", None)
@@ -39,6 +40,7 @@ class Deployer(appier.Observable):
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
         self.instance_c = instance_c or digitalriver.Instance
+        self.environment = environment or dict()
         self.ssh = None
 
     def deploy_url(self, url):
@@ -95,7 +97,9 @@ class Deployer(appier.Observable):
 
     def run_command(self, command):
         ssh = self.get_ssh()
-        _stdin, stdout, _stderr = ssh.exec_command(command + " 2>&1")
+        prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment])
+        suffix = "2>&1"
+        _stdin, stdout, _stderr = ssh.exec_command(prefix + " " + command + " " + suffix)
 
         while True:
             data = stdout.readline()
