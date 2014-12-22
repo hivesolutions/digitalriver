@@ -77,7 +77,7 @@ class DropletController(appier.Controller):
                 link = "droplets",
                 sub_link = "config",
                 droplet = droplet,
-                isntance = error.model,
+                instance = error.model,
                 errors = error.errors
             )
         return self.redirect(

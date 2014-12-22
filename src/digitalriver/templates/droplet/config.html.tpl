@@ -2,8 +2,8 @@
 {% block title %}Droplets{% endblock %}
 {% block name %}Droplet #{{ droplet.id }}{% endblock %}
 {% block content %}
- 	<form action="{{ url_for('droplet.do_config', id = droplet.id) }}" method="post" class="form">
-        <table class="table table-edit" data-error="{{ errors.prices }}">
+     <form action="{{ url_for('droplet.do_config', id = droplet.id) }}" method="post" class="form">
+        <table class="table table-edit" data-error="{{ errors.names }}{{ errors.values }}">
             <input name="address" type="hidden" value="{{ droplet.networks.v4[0].ip_address }}" />
             <thead>
                 <tr>
@@ -14,12 +14,22 @@
             <tbody>
                 <tr class="template">
                     <td>
-                        <input type="text" name="config[][name]" class="text-field" />
+                        <input type="text" name="names" class="text-field" />
                     </td>
                     <td>
-                        <input type="text" name="config[][value]" class="text-field" />
+                        <input type="text" name="values" class="text-field" />
                     </td>
                 </tr>
+                {% for name, value in instance.join_config()  %}
+                    <tr>
+                        <td>
+                            <input type="text" name="names" class="text-field" value="{{ name }}" />
+                        </td>
+                        <td>
+                            <input type="text" name="values" class="text-field" value="{{ value }}" />
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
             <tfoot>
                 <tr>

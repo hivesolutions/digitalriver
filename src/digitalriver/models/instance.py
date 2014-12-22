@@ -13,6 +13,14 @@ class Instance(base.DRBase):
         default = True
     )
 
+    names = appier.field(
+        type = list
+    )
+
+    values = appier.field(
+        type = list
+    )
+
     config = appier.field(
         type = list
     )
@@ -39,13 +47,21 @@ class Instance(base.DRBase):
         instance.address = ctx.droplet_address
         instance.provisions.append(ctx)
         instance.save()
-        
+
     @classmethod
     def by_droplet(cls, droplet):
         address = droplet["networks"]["v4"][0]["ip_address"]
         instance = cls.singleton(address = address)
         instance.address = address
         return instance
+
+    def pre_save(self):
+        base.DRBase.pre_save(self)
+        self.join_config()
+
+    def join_config(self):
+        self.config = zip(self.names, self.values)
+        return self.config
 
     def has_feature(self, name):
         return hasattr(self, "features") and name in self.features
