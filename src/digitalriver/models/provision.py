@@ -17,6 +17,8 @@ class Provision(base.DRBase):
         default = True
     )
 
+    pstatus = appier.field()
+
     droplet_id = appier.field(
         type = int,
         index = True,
@@ -34,7 +36,8 @@ class Provision(base.DRBase):
     )
 
     config = appier.field(
-        type = dict
+        type = list,
+        immutable = True
     )
 
     log = appier.field(
@@ -58,21 +61,41 @@ class Provision(base.DRBase):
 
     def pre_validate(self):
         base.DRBase.pre_validate(self)
-        self.pid = str(uuid.uuid4())
+        if self.is_new(): self.pid = str(uuid.uuid4())
 
     def post_create(self):
         base.DRBase.post_create(self)
         thread = threading.Thread(target = self.deploy)
         thread.start()
 
+    def start(self):
+        self.set_status("started")
+
+    def stop(self):
+        self.set_status("stopped")
+
+    def finish(self):
+        self.set_status("finished")
+
+    def cancel(self):
+        self.set_status("cancel")
+
+    def set_status(self, value):
+        self.pstatus = value
+        self.save()
+
     def deploy(self):
-        logger = self.create_logger()
-        deployer = self.owner.get_deployer(
-            address = self.droplet_address,
-            username = "root"
-        )
-        deployer.bind("stdout", logger)
-        deployer.deploy_url(self.url)
+        self.start()
+        try:
+            logger = self.create_logger()
+            deployer = self.owner.get_deployer(
+                address = self.droplet_address,
+                username = "root"
+            )
+            deployer.bind("stdout", logger)
+            deployer.deploy_url(self.url)
+        except: self.cancel(); raise
+        else: self.finish()
 
     def create_logger(self):
         data_logger = self.create_data()
