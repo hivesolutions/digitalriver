@@ -7,6 +7,12 @@
     <table>
         <tbody>
             <tr>
+                <td class="right label" width="50%">status</td>
+                <td class="left value" width="50%">
+                    <span class="tag {{ provision.pstatus }}">{{ provision.pstatus }}</span>
+                </td>
+            </tr>
+            <tr>
                 <td class="right label" width="50%">droplet</td>
                 <td class="left value" width="50%">
                     <a href="{{ url_for('droplet.show', id = provision.droplet_id) }}">#{{ provision.droplet_id }}</a>
@@ -14,7 +20,9 @@
             </tr>
             <tr>
                 <td class="right label" width="50%">url</td>
-                <td class="left value" width="50%">{{ provision.url }}</td>
+                <td class="left value" width="50%">
+                    <a href="{{ provision.url }}">{{ provision.url.rsplit("/", 1)[1] }}</a>
+                </td>
             </tr>
         </tbody>
     </table>
