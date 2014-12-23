@@ -85,7 +85,7 @@ class Deployer(appier.Observable):
         stop = data.get("stop", None)
         if not stop: return
         self.run_command(stop)
-        
+
     def has_base(self):
         return self.run_command("ls %s" % Deployer.BASE_DIRECTORY)
 
@@ -106,13 +106,15 @@ class Deployer(appier.Observable):
     def run_command(self, command):
         ssh = self.get_ssh()
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment.items()])
-        suffix = "2>&1"
 
-        channel = ssh.get_transport().open_session()
-        channel.exec_command(prefix + " $SHELL -c '" + command + "' " + suffix)
+        transport = ssh.get_transport()
+        channel = transport.open_session()
+        stdout = channel.makefile()
+        channel.set_combine_stderr(True)
+        channel.exec_command(prefix + " $SHELL -c '" + command + "'")
 
         while True:
-            data = channel.recv(4096)
+            data = stdout.readline()
             if not data: break
             sys.stdout.write(data)
             sys.stdout.flush()
