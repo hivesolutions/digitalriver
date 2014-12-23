@@ -17,6 +17,7 @@
                     });
 
             pushi.bind("stdout", function(event, data, channel) {
+                        data = data.replace("\n", "<br/>");
                         element.append("<div class=\"line\">" + data + "</div>");
                         scrollBottom(element);
                     });
