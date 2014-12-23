@@ -42,6 +42,14 @@ class Instance(base.DRBase):
         provision.Provision.bind_g("post_create", cls.provision_post_create)
 
     @classmethod
+    def validate(cls):
+        return super(Instance, cls).validate() + [
+            appier.not_null("address"),
+            appier.not_empty("address"),
+            appier.not_duplicate("address", cls._name())
+        ]
+
+    @classmethod
     def provision_post_create(cls, ctx):
         instance = Instance.singleton(address = ctx.droplet_address)
         instance.address = ctx.droplet_address
