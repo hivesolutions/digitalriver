@@ -8,7 +8,6 @@ import pushi
 import appier
 
 from . import base
-from . import instance
 
 class Provision(base.DRBase):
 
@@ -84,9 +83,13 @@ class Provision(base.DRBase):
         thread.start()
 
     def join_config(self):
+        from . import instance
         instance = instance.Instance.get(address = self.droplet_address)
-        self.config = instance.config
         self.config = zip(self.names, self.values)
+        self.config = list(self.config)
+        for name, value in instance.config:
+            if name in self.names: continue
+            self.config.append([name, value])
         return self.config
 
     def deploy(self):
@@ -95,7 +98,8 @@ class Provision(base.DRBase):
             logger = self.create_logger()
             deployer = self.owner.get_deployer(
                 address = self.droplet_address,
-                username = "root"
+                username = "root",
+                environment = dict(self.config)
             )
             deployer.bind("stdout", logger)
             deployer.deploy_url(self.url)
