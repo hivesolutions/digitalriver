@@ -98,10 +98,6 @@ class BaseController(appier.Controller):
         droplet_id = droplet["id"]
         droplet = api.get_droplet(droplet_id)
 
-        networks = droplet["networks"]
-        ipv4 = networks["v4"][0]
-        address = ipv4["ip_address"]
-
         return self.redirect(
             self.url_for("base.index")
         )
