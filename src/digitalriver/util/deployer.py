@@ -85,8 +85,12 @@ class Deployer(appier.Observable):
         stop = data.get("stop", None)
         if not stop: return
         self.run_command(stop)
+        
+    def has_base(self):
+        return self.run_command("ls %s" % Deployer.BASE_DIRECTORY)
 
     def run_base(self):
+        if self.has_base(): return
         base_s = " ".join(Deployer.BASE_PACKAGES)
         self.run_command("mkdir -p %s" % Deployer.BASE_DIRECTORY)
         self.run_command("apt-get update")
@@ -94,23 +98,27 @@ class Deployer(appier.Observable):
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
-        self.run_command("mkdir -p %s" % Deployer.TEMP_DIRECTORY)
+        self.run_command("rm -rf %s && mkdir -p %s" % (Deployer.TEMP_DIRECTORY, Deployer.TEMP_DIRECTORY))
         self.run_command("cd %s && wget %s" % (Deployer.TEMP_DIRECTORY, url))
         self.run_command("cd %s && chmod +x %s && ./%s" % (Deployer.TEMP_DIRECTORY, name, name))
         self.run_command("rm -rf %s" % Deployer.TEMP_DIRECTORY)
 
     def run_command(self, command):
         ssh = self.get_ssh()
-        prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment])
+        prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment.items()])
         suffix = "2>&1"
-        _stdin, stdout, _stderr = ssh.exec_command(prefix + " " + command + " " + suffix)
+
+        channel = ssh.get_transport().open_session()
+        channel.exec_command(prefix + " $SHELL -c '" + command + "' " + suffix)
 
         while True:
-            data = stdout.readline()
+            data = channel.recv(4096)
             if not data: break
             sys.stdout.write(data)
             sys.stdout.flush()
             self.trigger("stdout", data)
+
+        return not channel.exit_status_ready()
 
     def get_instance(self):
         return self.instance_c.singleton(address = self.address)
