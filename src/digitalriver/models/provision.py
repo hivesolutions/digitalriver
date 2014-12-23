@@ -72,6 +72,8 @@ class Provision(base.DRBase):
     def pre_validate(self):
         base.DRBase.pre_validate(self)
         if self.is_new(): self.pid = str(uuid.uuid4())
+        is_valid = hasattr(self, "names") and hasattr(self, "values")
+        if not is_valid: self.names = self.values = []
 
     def pre_save(self):
         base.DRBase.pre_save(self)

@@ -63,6 +63,11 @@ class Instance(base.DRBase):
         instance.address = address
         return instance
 
+    def pre_validate(self):
+        base.DRBase.pre_validate(self)
+        is_valid = hasattr(self, "names") and hasattr(self, "values")
+        if not is_valid: self.names = self.values = []
+
     def pre_save(self):
         base.DRBase.pre_save(self)
         self.join_config()
