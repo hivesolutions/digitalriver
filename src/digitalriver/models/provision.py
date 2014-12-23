@@ -151,7 +151,7 @@ class Provision(base.DRBase):
         self.set_status("finished")
 
     def cancel(self):
-        self.set_status("cancel")
+        self.set_status("canceled")
 
     def set_status(self, value):
         self.pstatus = value
