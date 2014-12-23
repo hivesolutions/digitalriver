@@ -8,6 +8,7 @@ import pushi
 import appier
 
 from . import base
+from . import instance
 
 class Provision(base.DRBase):
 
@@ -73,10 +74,20 @@ class Provision(base.DRBase):
         base.DRBase.pre_validate(self)
         if self.is_new(): self.pid = str(uuid.uuid4())
 
+    def pre_save(self):
+        base.DRBase.pre_save(self)
+        self.join_config()
+
     def post_create(self):
         base.DRBase.post_create(self)
         thread = threading.Thread(target = self.deploy)
         thread.start()
+
+    def join_config(self):
+        instance = instance.Instance.get(address = self.droplet_address)
+        self.config = instance.config
+        self.config = zip(self.names, self.values)
+        return self.config
 
     def deploy(self):
         self.start()
