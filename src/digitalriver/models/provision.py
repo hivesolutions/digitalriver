@@ -35,6 +35,16 @@ class Provision(base.DRBase):
         immutable = True
     )
 
+    names = appier.field(
+        type = list,
+        immutable = True
+    )
+
+    values = appier.field(
+        type = list,
+        immutable = True
+    )
+
     config = appier.field(
         type = list,
         immutable = True
@@ -67,22 +77,6 @@ class Provision(base.DRBase):
         base.DRBase.post_create(self)
         thread = threading.Thread(target = self.deploy)
         thread.start()
-
-    def start(self):
-        self.set_status("started")
-
-    def stop(self):
-        self.set_status("stopped")
-
-    def finish(self):
-        self.set_status("finished")
-
-    def cancel(self):
-        self.set_status("cancel")
-
-    def set_status(self, value):
-        self.pstatus = value
-        self.save()
 
     def deploy(self):
         self.start()
@@ -129,3 +123,19 @@ class Provision(base.DRBase):
             connection.send_channel("stdout", message, self.pid, persist = False)
 
         return logger
+
+    def start(self):
+        self.set_status("started")
+
+    def stop(self):
+        self.set_status("stopped")
+
+    def finish(self):
+        self.set_status("finished")
+
+    def cancel(self):
+        self.set_status("cancel")
+
+    def set_status(self, value):
+        self.pstatus = value
+        self.save()
