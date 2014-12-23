@@ -17,6 +17,10 @@ class Deployer(appier.Observable):
     """ The base directory where the instance configuration of the
     torus infra-structure will be positioned for execution """
 
+    TEMP_DIRECTORY = "/tmp/torus"
+    """ The temporary directory that is going to be used in the
+    build process and any other ephemeral operations """
+
     BASE_PACKAGES = ("ruby", "nodejs")
     """ Sequence containing the various packages that are considered
     to be foundation and that should always be installed """
@@ -90,10 +94,10 @@ class Deployer(appier.Observable):
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
-        self.run_command("mkdir -p /tmp/torus")
-        self.run_command("cd /tmp/torus && wget %s" % url)
-        self.run_command("cd /tmp/torus && chmod +x %s && ./%s" % (name, name))
-        self.run_command("rm -rf /tmp/torus")
+        self.run_command("mkdir -p %s" % Deployer.TEMP_DIRECTORY)
+        self.run_command("cd %s && wget %s" % (Deployer.TEMP_DIRECTORY, url))
+        self.run_command("cd %s && chmod +x %s && ./%s" % (Deployer.TEMP_DIRECTORY, name, name))
+        self.run_command("rm -rf %s" % Deployer.TEMP_DIRECTORY)
 
     def run_command(self, command):
         ssh = self.get_ssh()
