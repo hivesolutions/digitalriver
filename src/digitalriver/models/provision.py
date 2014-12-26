@@ -35,6 +35,12 @@ class Provision(base.DRBase):
         immutable = True
     )
 
+    force = appier.field(
+        type = bool,
+        index = True,
+        immutable = True
+    )
+
     names = appier.field(
         type = list,
         immutable = True
@@ -66,11 +72,14 @@ class Provision(base.DRBase):
             appier.not_empty("droplet_address"),
 
             appier.not_null("url"),
-            appier.not_empty("url")
+            appier.not_empty("url"),
+
+            appier.not_null("force")
         ]
 
     def pre_validate(self):
         base.DRBase.pre_validate(self)
+        if not hasattr(self, "force"): self.force = False
         if self.is_new(): self.pid = str(uuid.uuid4())
         is_valid = hasattr(self, "names") and hasattr(self, "values")
         if not is_valid: self.names = self.values = []
@@ -104,7 +113,10 @@ class Provision(base.DRBase):
                 environment = dict(self.config)
             )
             deployer.bind("stdout", logger)
-            deployer.deploy_url(self.url)
+            deployer.deploy_url(
+                self.url,
+                force = self.force
+            )
         except: self.cancel(); raise
         else: self.finish()
 
