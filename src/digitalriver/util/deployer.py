@@ -128,7 +128,7 @@ class Deployer(appier.Observable):
         self.run_command("cd %s && chmod +x %s && ./%s" % (cls.TEMP_DIRECTORY, name, name))
         self.run_command("rm -rf %s" % cls.TEMP_DIRECTORY)
 
-    def run_command(self, command, output = True):
+    def run_command(self, command, output = True, timeout = None, bufsize = -1):
         # builds the prefix string containing the various environment
         # variables for the execution so that the command runs in context
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment.items()])
@@ -140,8 +140,10 @@ class Deployer(appier.Observable):
         channel = transport.open_session()
 
         try:
-            stdout = channel.makefile()
+            channel.settimeout(timeout)
             channel.set_combine_stderr(True)
+            _stdin = channel.makefile("wb", bufsize)
+            stdout = channel.makefile("r", bufsize)
             channel.exec_command(prefix + " $SHELL -c '" + command + "'")
 
             while True:
@@ -161,7 +163,7 @@ class Deployer(appier.Observable):
     def get_instance(self):
         return self.instance_c.singleton(
             address = self.address,
-            apply = False
+            form = False
         )
 
     def get_ssh(self, force = False):
