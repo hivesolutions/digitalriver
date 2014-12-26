@@ -55,7 +55,7 @@ class Deployer(appier.Observable):
         self.environment = environment or dict()
         self.ssh = None
 
-    def deploy_url(self, url):
+    def deploy_url(self, url, force = False):
         data = appier.get(url)
         is_dict = type(data) == dict
 
@@ -63,11 +63,11 @@ class Deployer(appier.Observable):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-        self.deploy_torus(url, data)
+        self.deploy_torus(url, data, force = force)
 
-    def deploy_torus(self, url, data):
+    def deploy_torus(self, url, data, force = False):
         instance = self.get_instance()
-        if instance.has_provision(url): return
+        if instance.has_provision(url) and not force: return
 
         build = data["build"]
         build = self._to_absolute(url, build)
