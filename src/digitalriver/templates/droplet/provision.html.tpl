@@ -24,6 +24,20 @@
             <input class="text-field" name="url" placeholder="eg: https://github.com/hivesolutions/example" value="{{ provision.url }}"
                    data-error="{{ errors.url }}" />
         </div>
+        <div class="label">
+            <label>Options</label>
+        </div>
+        <div class="input">
+            <div class="option">
+                <span class="float-left">Force deployment ?</span>
+                {% if provision.force %}
+                    <input class="float-right" type="checkbox" name="force" checked="1" />
+                {% else %}
+                    <input class="float-right" type="checkbox" name="force" />
+                {% endif %}
+                <div class="clear"></div>
+            </div>
+        </div>
         <div class="extras"></div>
         <span class="button" data-link="{{ url_for('droplet.show', id = droplet.id) }}">Cancel</span>
         //
