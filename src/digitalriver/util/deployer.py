@@ -134,18 +134,24 @@ class Deployer(appier.Observable):
 
         transport = ssh.get_transport()
         channel = transport.open_session()
-        stdout = channel.makefile()
-        channel.set_combine_stderr(True)
-        channel.exec_command(prefix + " $SHELL -c '" + command + "'")
 
-        while True:
-            data = stdout.readline()
-            if not data: break
-            sys.stdout.write(data)
-            sys.stdout.flush()
-            self.trigger("stdout", data)
+        try:
+            stdout = channel.makefile()
+            channel.set_combine_stderr(True)
+            channel.exec_command(prefix + " $SHELL -c '" + command + "'")
 
-        return channel.recv_exit_status()
+            while True:
+                data = stdout.readline()
+                if not data: break
+                sys.stdout.write(data)
+                sys.stdout.flush()
+                self.trigger("stdout", data)
+
+            code = channel.recv_exit_status()
+        except:
+            channel.close()
+
+        return code
 
     def get_instance(self):
         return self.instance_c.singleton(
