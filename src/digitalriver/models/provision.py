@@ -96,7 +96,10 @@ class Provision(base.DRBase):
 
     def join_config(self):
         from . import instance
-        instance = instance.Instance.singleton(address = self.droplet_address)
+        instance = instance.Instance.singleton(
+            address = self.droplet_address,
+            apply = False
+        )
         self.config = zip(self.names, self.values)
         self.config = list(self.config)
         for name, value in instance.config:
