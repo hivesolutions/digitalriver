@@ -73,6 +73,7 @@ class Provision(base.DRBase):
 
             appier.not_null("url"),
             appier.not_empty("url"),
+            appier.is_url("url"),
 
             appier.not_null("force")
         ]
