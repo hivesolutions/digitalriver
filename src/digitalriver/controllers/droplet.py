@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import json
+
 import appier
 
 import digitalriver
@@ -63,7 +65,7 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/config", "POST")
     @appier.ensure("base")
     def do_config(self, id):
-        address = self.field("address")
+        address = self.field("address", mandatory = True)
         instance = digitalriver.Instance.singleton(address = address)
         instance.apply()
         try: instance.save()
@@ -121,3 +123,11 @@ class DropletController(appier.Controller):
         return self.redirect(
             self.url_for("provision.log", pid = provision.pid)
         )
+
+    @appier.route("/droplets/<int:id>/process", "GET")
+    @appier.ensure("base")
+    def process(self, id):
+        url = self.field("url", mandatory = True)
+        info = appier.get(url)
+        if not type(info) == dict: info = json.loads(info)
+        return info

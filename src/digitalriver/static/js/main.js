@@ -53,6 +53,58 @@
 })(jQuery);
 
 (function(jQuery) {
+    jQuery.fn.uprovision = function(options) {
+        // retrieves the reference to the currently matched
+        // object that is going to be used as the curren context
+        var matchedObject = this;
+
+        // retrieves the associated (hidden) field that contains
+        // the droplet id and then gathers its value
+        var dropletIdField = jQuery("[name=droplet_id]", matchedObject);
+        var dropletId = dropletIdField.uxvalue();
+
+        // retrieves the reference to the url field so that it's
+        // possible to register for any change in such element that
+        // will trigger a remote request to the server side
+        var urlField = jQuery("[name=url]", matchedObject);
+        urlField.bind("value_change", function() {
+            var element = jQuery(this);
+            var provision = element.parents(".provision");
+            var extras = jQuery(".extras", provision);
+            var value = element.uxvalue();
+            extras.empty();
+            jQuery.ajax({
+                url : "/droplets/" + dropletId + "/process",
+                data : {
+                    url : value
+                },
+                error : function(request, status, error) {
+                },
+                success : function(data) {
+                    var config = data.config;
+                    if (!config) {
+                        return;
+                    }
+
+                    for (var index = 0; index < config.length; index++) {
+                        var item = config[index];
+                        extras.append("<div class=\"label\">" + "<label>"
+                                + item.name + "</label>" + "</div>");
+                        extras.append("<div class=\"input\">"
+                                + "<input class=\"text-field\" name=\"config\" />"
+                                + "</div>");
+                    }
+                }
+            });
+        });
+
+        // returns the object to the caller function/method
+        // so that it may be chained in other executions
+        return this;
+    };
+})(jQuery);
+
+(function(jQuery) {
     jQuery.fn.uapply = function(options) {
         // sets the jquery matched object
         var matchedObject = this;
@@ -61,6 +113,11 @@
         // objects and starts the log extension in all of them
         var log = jQuery(".log", matchedObject);
         log.ulog();
+
+        // retrieves the reference to the provision element and
+        // then registers the proper extension in it
+        var provision = jQuery(".provision", matchedObject);
+        provision.uprovision();
     };
 })(jQuery);
 

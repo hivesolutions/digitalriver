@@ -2,7 +2,7 @@
 {% block title %}Droplets{% endblock %}
 {% block name %}Droplet #{{ droplet.id }}{% endblock %}
 {% block content %}
-    <form action="{{ url_for('droplet.create_provision', id = droplet.id) }}" method="post" class="form">
+    <form action="{{ url_for('droplet.create_provision', id = droplet.id) }}" method="post" class="form provision">
         <input type="hidden" name="droplet_id" value="{{ droplet.id }}" />
         <input type="hidden" name="droplet_address" value="{{ droplet.networks.v4[0].ip_address }}" />
         <div class="label">
@@ -24,6 +24,7 @@
             <input class="text-field" name="url" placeholder="eg: https://github.com/hivesolutions/example" value="{{ provision.url }}"
                    data-error="{{ errors.url }}" />
         </div>
+        <div class="extras"></div>
         <span class="button" data-link="{{ url_for('droplet.show', username = droplet.id) }}">Cancel</span>
         //
         <span class="button" data-submit="true">Provision</span>
