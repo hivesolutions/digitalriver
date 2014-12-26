@@ -104,8 +104,8 @@
                         extras.append("<div class=\"label\">" + "<label>"
                                 + item.name + "</label>" + "</div>");
                         extras.append("<div class=\"input\">"
-                                + "<input class=\"text-field\" name=\"config\" />"
-                                + "</div>");
+                                + "<input class=\"text-field\" name=\"config\" value=\""
+                                + item["default"] + "\" />" + "</div>");
                     }
                 }
             });
