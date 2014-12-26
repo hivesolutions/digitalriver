@@ -148,7 +148,10 @@ class Deployer(appier.Observable):
         return channel.recv_exit_status()
 
     def get_instance(self):
-        return self.instance_c.singleton(address = self.address)
+        return self.instance_c.singleton(
+            address = self.address,
+            apply = False
+        )
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
