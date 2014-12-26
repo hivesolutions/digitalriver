@@ -25,7 +25,7 @@
                    data-error="{{ errors.url }}" />
         </div>
         <div class="extras"></div>
-        <span class="button" data-link="{{ url_for('droplet.show', username = droplet.id) }}">Cancel</span>
+        <span class="button" data-link="{{ url_for('droplet.show', id = droplet.id) }}">Cancel</span>
         //
         <span class="button" data-submit="true">Provision</span>
     </form>
