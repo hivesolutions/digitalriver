@@ -51,7 +51,10 @@ class Instance(base.DRBase):
 
     @classmethod
     def provision_post_create(cls, ctx):
-        instance = Instance.singleton(address = ctx.droplet_address, apply = False)
+        instance = Instance.singleton(
+            address = ctx.droplet_address,
+            apply = False
+        )
         instance.address = ctx.droplet_address
         instance.provisions.append(ctx)
         instance.save()
