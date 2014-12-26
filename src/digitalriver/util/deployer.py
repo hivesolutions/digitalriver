@@ -67,7 +67,8 @@ class Deployer(appier.Observable):
 
     def deploy_torus(self, url, data, force = False):
         instance = self.get_instance()
-        if instance.has_provision(url) and not force: return
+        skip = instance.has_provision(url) and not force
+        if skip: self.trigger("stdout", "Skipped '%s'" % url); return
 
         build = data["build"]
         build = self._to_absolute(url, build)
