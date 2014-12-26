@@ -99,7 +99,7 @@ class Deployer(appier.Observable):
 
     def has_base(self):
         cls = self.__class__
-        return self.run_command("ls %s" % cls.BASE_DIRECTORY) == 0
+        return self.run_command("ls %s" % cls.BASE_DIRECTORY, output = False) == 0
 
     def run_base(self):
         cls = self.__class__
@@ -128,7 +128,7 @@ class Deployer(appier.Observable):
         self.run_command("cd %s && chmod +x %s && ./%s" % (cls.TEMP_DIRECTORY, name, name))
         self.run_command("rm -rf %s" % cls.TEMP_DIRECTORY)
 
-    def run_command(self, command):
+    def run_command(self, command, output = True):
         # builds the prefix string containing the various environment
         # variables for the execution so that the command runs in context
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment.items()])
@@ -147,6 +147,7 @@ class Deployer(appier.Observable):
             while True:
                 data = stdout.readline()
                 if not data: break
+                if not output: continue
                 sys.stdout.write(data)
                 sys.stdout.flush()
                 self.trigger("stdout", data)
