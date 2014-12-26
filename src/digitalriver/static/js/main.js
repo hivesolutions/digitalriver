@@ -101,10 +101,12 @@
 
                     for (var index = 0; index < config.length; index++) {
                         var item = config[index];
+                        extras.append("<input type=\"hidden\" name=\"names\" value=\""
+                                + item.name + "\" />");
                         extras.append("<div class=\"label\">" + "<label>"
                                 + item.name + "</label>" + "</div>");
                         extras.append("<div class=\"input\">"
-                                + "<input class=\"text-field\" name=\"config\" value=\""
+                                + "<input class=\"text-field\" name=\"values\" value=\""
                                 + item["default"] + "\" />" + "</div>");
                     }
                 }
