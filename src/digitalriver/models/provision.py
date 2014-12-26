@@ -80,7 +80,6 @@ class Provision(base.DRBase):
 
     def pre_validate(self):
         base.DRBase.pre_validate(self)
-        if not hasattr(self, "force"): self.force = False
         if self.is_new(): self.pid = str(uuid.uuid4())
         is_valid = hasattr(self, "names") and hasattr(self, "values")
         if not is_valid: self.names = self.values = []
@@ -169,6 +168,7 @@ class Provision(base.DRBase):
     def cancel(self):
         self.set_status("canceled")
 
-    def set_status(self, value):
+    def set_status(self, value, reload = True):
+        self = self.reload() if reload else self
         self.pstatus = value
         self.save()
