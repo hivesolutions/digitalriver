@@ -129,9 +129,13 @@ class Deployer(appier.Observable):
         self.run_command("rm -rf %s" % cls.TEMP_DIRECTORY)
 
     def run_command(self, command):
-        ssh = self.get_ssh()
+        # builds the prefix string containing the various environment
+        # variables for the execution so that the command runs in context
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment.items()])
 
+        # retrieves the reference to the current ssh connection and
+        # then creates a new channel stream for command execution
+        ssh = self.get_ssh()
         transport = ssh.get_transport()
         channel = transport.open_session()
 
