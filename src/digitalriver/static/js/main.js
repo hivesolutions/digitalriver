@@ -68,11 +68,24 @@
         // will trigger a remote request to the server side
         var urlField = jQuery("[name=url]", matchedObject);
         urlField.bind("value_change", function() {
+            // retrieves the current element refernece and uses it
+            // to gather the parent provision container
             var element = jQuery(this);
             var provision = element.parents(".provision");
+
+            // gathers the reference to the extras element of the
+            // provision and empties it of any element (new config)
             var extras = jQuery(".extras", provision);
-            var value = element.uxvalue();
             extras.empty();
+
+            // retrieves the (url) value of the current element, this is
+            // going to be used as the basis in the remote request
+            var value = element.uxvalue();
+
+            // runs the remote call for the processing of the requested
+            // torus configuration file (using http), this should return
+            // a proper json encoded config file from which the configuration
+            // lines may be extracted and used for configuration
             jQuery.ajax({
                 url : "/droplets/" + dropletId + "/process",
                 data : {
