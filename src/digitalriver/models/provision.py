@@ -98,7 +98,7 @@ class Provision(base.DRBase):
         from . import instance
         instance = instance.Instance.singleton(
             address = self.droplet_address,
-            apply = False
+            form = False
         )
         self.config = zip(self.names, self.values)
         self.config = list(self.config)
