@@ -9,3 +9,23 @@ It's often difficult to be able to deploy constant infra-structure across a grid
 ## Idea
 
 The concept is to build simple JSON based files that define the way the feature is configured/build and/or destroyed. A simple bash script file should run the various steps to build the feature in the machine.
+
+## Example
+
+```json
+{
+    "build" : "build.sh",
+    "start" : "docker start hello_service",
+    "stop" : "docker stop hello_service",
+    "depends" : [
+        "https://server.com/docker/torus.json"
+    ],
+    "config" : [
+        {
+            "name" : "HOST",
+            "default" : "127.0.0.1",
+            "persist" : true
+        }
+    ]
+}
+```
