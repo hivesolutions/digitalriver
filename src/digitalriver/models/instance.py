@@ -72,6 +72,14 @@ class Instance(base.DRBase):
         base.DRBase.pre_save(self)
         self.join_config()
 
+    def sync(self):
+        deployer = self.owner.get_deployer(
+            address = self.address,
+            username = "root",
+            instance = self
+        )
+        deployer.sync_torus()
+
     def join_config(self):
         self.config = zip(self.names, self.values)
         return self.config
