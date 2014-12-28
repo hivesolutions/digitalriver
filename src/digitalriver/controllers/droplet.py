@@ -129,5 +129,7 @@ class DropletController(appier.Controller):
     def process(self, id):
         url = self.field("url", mandatory = True)
         info = appier.get(url)
-        if not type(info) == dict: info = json.loads(info)
+        if not type(info) == dict:
+            info = info.decode("utf-8")
+            info = json.loads(info)
         return info
