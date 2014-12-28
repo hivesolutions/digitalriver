@@ -43,6 +43,7 @@ class Deployer(appier.Observable):
         password = None,
         id_rsa_path = None,
         provision = None,
+        instance = None,
         environment = None,
         config_file = None,
         data_directory = None,
@@ -61,8 +62,10 @@ class Deployer(appier.Observable):
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
         self.provision = provision or None
-        self.environment = environment or (self.provision and\
-            self.provision.extra_config())
+        self.instance = instance or (self.provision.get_instance() if
+            self.provision else None)
+        self.environment = environment or (self.provision.extra_config() if
+            self.provision else [])
         self.config_file = config_file or cls.CONFIG_FILE
         self.data_directory = data_directory or cls.DATA_DIRECTORY
         self.base_directory = base_directory or cls.BASE_DIRECTORY
@@ -81,8 +84,7 @@ class Deployer(appier.Observable):
         self.deploy_torus(url, data, force = force)
 
     def deploy_torus(self, url, data, force = False):
-        instance = self.provision.get_instance()
-        skip = instance.has_provision(url) and not force
+        skip = self.instance.has_provision(url) and not force
         if skip: self.trigger("stdout", "Skipped '%s'" % url); return
 
         build = data["build"]
@@ -91,7 +93,7 @@ class Deployer(appier.Observable):
 
         for dependency in dependencies:
             dependency = self._to_absolute(url, dependency)
-            if instance.has_provision(dependency): continue
+            if self.instance.has_provision(dependency): continue
             self.deploy_url(dependency)
 
         self.build_all(data = data)
@@ -103,6 +105,7 @@ class Deployer(appier.Observable):
     def sync_torus(self):
         self.build_base()
         self.build_exec()
+        self.build_config()
 
     def start_torus(self, url, data):
         start = data.get("start", None)
@@ -140,8 +143,7 @@ class Deployer(appier.Observable):
         self.run_command("echo \"%s\" > /etc/rc.local" % exec_s)
 
     def build_config(self):
-        instance = self.provision.get_instance()
-        items = instance.config
+        items = self.instance.config
         config_path = "%s/%s" % (self.base_directory, self.config_file)
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
