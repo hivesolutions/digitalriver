@@ -104,7 +104,7 @@ class Provision(base.DRBase):
             deployer = self.owner.get_deployer(
                 address = self.droplet_address,
                 username = "root",
-                environment = dict(self.config)
+                provision = self
             )
             deployer.bind("stdout", logger)
             deployer.bind("deployed", self.mark)
@@ -170,6 +170,9 @@ class Provision(base.DRBase):
         self = self.reload() if reload else self
         self.pstatus = value
         self.save()
+
+    def get_name(self):
+        return self.url.rsplit("/", 2)[1]
 
     def get_instance(self):
         from . import instance
