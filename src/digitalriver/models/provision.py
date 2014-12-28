@@ -126,8 +126,9 @@ class Provision(base.DRBase):
 
     def mark(self, url):
         instance = self.get_instance()
-        if url in instance.features: return
-        instance.features.append(url)
+        token = self.get_name(url = url)
+        if token in instance.features: return
+        instance.features.append(token)
         instance.save()
 
     def create_logger(self):
@@ -180,12 +181,13 @@ class Provision(base.DRBase):
         self.pstatus = value
         self.save()
 
-    def get_name(self):
-        return self.url.rsplit("/", 2)[1]
+    def get_name(self, url = None):
+        url = url or self.url
+        return url.rsplit("/", 2)[1]
 
     def get_instance(self):
         from . import instance
         return instance.Instance.singleton(
-            address = self.address,
+            address = self.droplet_address,
             form = False
         )
