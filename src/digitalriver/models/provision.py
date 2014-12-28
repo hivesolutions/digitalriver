@@ -126,9 +126,8 @@ class Provision(base.DRBase):
 
     def mark(self, url):
         instance = self.get_instance()
-        token = self.get_name(url = url)
-        if token in instance.features: return
-        instance.features.append(token)
+        if url in instance.features: return
+        instance.features.append(url)
         instance.save()
 
     def create_logger(self):
