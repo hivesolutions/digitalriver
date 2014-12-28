@@ -124,6 +124,23 @@ class DropletController(appier.Controller):
             self.url_for("provision.log", pid = provision.pid)
         )
 
+    @appier.route("/droplets/<int:id>/sync", "GET")
+    @appier.ensure("base")
+    def sync(self, id):
+        url = self.ensure_api()
+        if url: return self.redirect(url)
+        api = self.get_api()
+        droplet = api.get_droplet(id)
+        instance = digitalriver.Instance.by_droplet(droplet)
+        instance.sync()
+        return self.redirect(
+            self.url_for(
+                "droplet.show",
+                id = id,
+                message = "Sync successful"
+            )
+        )
+
     @appier.route("/droplets/<int:id>/process", "GET")
     @appier.ensure("base")
     def process(self, id):
