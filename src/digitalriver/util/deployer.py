@@ -114,6 +114,7 @@ class Deployer(appier.Observable):
 
     def build_all(self, data = None):
         self.build_base()
+        self.build_exec()
         self.build_config()
         self.build_feature(data = data)
 
@@ -127,6 +128,11 @@ class Deployer(appier.Observable):
         self.run_command("ln -s %s %s" % (base_path, data_path))
         self.run_command("apt-get update")
         self.run_command("apt-get -y install %s" % base_s)
+
+    def build_exec(self):
+        start_path = "%s/%s" % (self.base_directory, "start.sh")
+        exec_s = "#!/bin/sh -e\n%s\nexit 0" % start_path
+        self.run_command("echo \"%s\" > /etc/rc.local" % exec_s)
 
     def build_config(self):
         instance = self.provision.get_instance()
