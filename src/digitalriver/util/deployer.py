@@ -94,7 +94,7 @@ class Deployer(appier.Observable):
             self.deploy_url(dependency)
 
         self.build_all(data = data)
-        self.run_script(build)
+        self.run_script(build, env = True)
         self.close_ssh()
 
         self.trigger("deployed", url)
@@ -115,7 +115,7 @@ class Deployer(appier.Observable):
     def build_all(self, data = None):
         self.build_base()
         self.build_config()
-        self.build_provision(data = data)
+        self.build_feature(data = data)
 
     def build_base(self):
         if self.has_base(): return
@@ -135,30 +135,39 @@ class Deployer(appier.Observable):
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
 
-    def build_provision(self, data = None):
+    def build_feature(self, data = None):
         name = self.provision.get_name()
         items = self.provision.join_config()
-        provision_directory = "%s/%s" % (self.base_directory, name)
+        provision_directory = "%s/features/%s" % (self.base_directory, name)
         config_path = "%s/%s" % (provision_directory, self.config_file)
+        start_path = "%s/%s" % (provision_directory, "start.sh")
+        stop_path = "%s/%s" % (provision_directory, "stop.sh")
         torus_path = "%s/%s" % (provision_directory, "torus.json")
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
         self.run_command("rm -rf %s && mkdir -p %s" % (provision_directory, provision_directory))
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
         if not data: return
+        start_s = data.get("start", "")
+        stop_s = data.get("stop", "")
         data_s = json.dumps(data)
         self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (torus_path, data_s))
+        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (start_path, start_s))
+        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (stop_path, stop_s))
+        self.run_command("chmod +x %s" % start_path)
+        self.run_command("chmod +x %s" % stop_path)
 
-    def run_script(self, url):
+    def run_script(self, url, env = False):
         name = url.rsplit("/", 1)[1]
         self.run_command("rm -rf %s && mkdir -p %s" % (self.temp_directory, self.temp_directory))
         self.run_command("cd %s && wget %s" % (self.temp_directory, url))
-        self.run_command("cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name))
+        self.run_command("cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name), env = env)
         self.run_command("rm -rf %s" % self.temp_directory)
 
-    def run_command(self, command, output = True, timeout = None, bufsize = -1):
+    def run_command(self, command, env = False, output = True, timeout = None, bufsize = -1):
         # builds the prefix string containing the various environment
         # variables for the execution so that the command runs in context
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment])
+        if not env: prefix = ""
 
         # retrieves the reference to the current ssh connection and
         # then creates a new channel stream for command execution
