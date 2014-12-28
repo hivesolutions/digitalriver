@@ -94,16 +94,7 @@ class Provision(base.DRBase):
         thread.start()
 
     def join_config(self):
-        from . import instance
-        instance = instance.Instance.singleton(
-            address = self.droplet_address,
-            form = False
-        )
         self.config = zip(self.names, self.values)
-        self.config = list(self.config)
-        for name, value in instance.config:
-            if name in self.names: continue
-            self.config.append([name, value])
         return self.config
 
     def deploy(self):
@@ -116,12 +107,19 @@ class Provision(base.DRBase):
                 environment = dict(self.config)
             )
             deployer.bind("stdout", logger)
+            deployer.bind("deployed", self.mark)
             deployer.deploy_url(
                 self.url,
                 force = self.force
             )
         except: self.cancel(); raise
         else: self.finish()
+
+    def mark(self, url):
+        instance = self.get_instance()
+        if url in instance.features: return
+        instance.features.append(url)
+        instance.save()
 
     def create_logger(self):
         data_logger = self.create_data()
@@ -172,3 +170,10 @@ class Provision(base.DRBase):
         self = self.reload() if reload else self
         self.pstatus = value
         self.save()
+
+    def get_instance(self):
+        from . import instance
+        return instance.Instance.singleton(
+            address = self.address,
+            form = False
+        )
