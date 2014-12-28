@@ -61,7 +61,8 @@ class Deployer(appier.Observable):
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
         self.provision = provision or None
-        self.environment = environment or self.provision.extra_config()
+        self.environment = environment or (self.provision and\
+            self.provision.extra_config())
         self.config_file = config_file or cls.CONFIG_FILE
         self.data_directory = data_directory or cls.DATA_DIRECTORY
         self.base_directory = base_directory or cls.BASE_DIRECTORY
@@ -98,6 +99,10 @@ class Deployer(appier.Observable):
         self.close_ssh()
 
         self.trigger("deployed", url)
+
+    def sync_torus(self):
+        self.build_base()
+        self.build_exec()
 
     def start_torus(self, url, data):
         start = data.get("start", None)
