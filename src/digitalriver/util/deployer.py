@@ -6,8 +6,6 @@ import json
 
 import appier
 
-import digitalriver
-
 try: import paramiko
 except: paramiko = None
 
@@ -44,10 +42,15 @@ class Deployer(appier.Observable):
         username = None,
         password = None,
         id_rsa_path = None,
-        instance_c = None,
-        environment = None
+        provision = None,
+        config_file = None,
+        data_directory = None,
+        base_directory = None,
+        temp_directory = None,
+        base_packages = None
     ):
         appier.Observable.__init__(self)
+        cls = self.__class__
         self.address = appier.conf("DR_ADDRESS", None)
         self.username = appier.conf("DR_USERNAME", None)
         self.password = appier.conf("DR_PASSWORD", None)
@@ -56,8 +59,12 @@ class Deployer(appier.Observable):
         self.username = username or self.username
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
-        self.instance_c = instance_c or digitalriver.Instance
-        self.environment = environment or dict()
+        self.provision = provision or None
+        self.config_file = config_file or cls.CONFIG_FILE
+        self.data_directory = data_directory or cls.DATA_DIRECTORY
+        self.base_directory = base_directory or cls.BASE_DIRECTORY
+        self.temp_directory = temp_directory or cls.TEMP_DIRECTORY
+        self.base_packages = base_packages or cls.BASE_PACKAGES
         self.ssh = None
 
     def deploy_url(self, url, force = False):
@@ -71,7 +78,7 @@ class Deployer(appier.Observable):
         self.deploy_torus(url, data, force = force)
 
     def deploy_torus(self, url, data, force = False):
-        instance = self.get_instance()
+        instance = self.provision.get_instance()
         skip = instance.has_provision(url) and not force
         if skip: self.trigger("stdout", "Skipped '%s'" % url); return
 
@@ -84,8 +91,7 @@ class Deployer(appier.Observable):
             if instance.has_provision(dependency): continue
             self.deploy_url(dependency)
 
-        self.run_base()
-        self.run_config()
+        self.build_all()
         self.run_script(build)
         self.close_ssh()
 
@@ -102,35 +108,46 @@ class Deployer(appier.Observable):
         self.run_command(stop)
 
     def has_base(self):
-        cls = self.__class__
-        return self.run_command("ls %s" % cls.BASE_DIRECTORY, output = False) == 0
+        return self.run_command("ls %s" % self.base_directory, output = False) == 0
 
-    def run_base(self):
-        cls = self.__class__
+    def build_all(self):
+        self.build_base()
+        self.build_config()
+        self.build_provision()
+
+    def build_base(self):
         if self.has_base(): return
-        base_path = "%s/%s" % (cls.BASE_DIRECTORY, cls.CONFIG_FILE)
-        data_path = "%s/%s" % (cls.DATA_DIRECTORY, cls.CONFIG_FILE)
-        base_s = " ".join(cls.BASE_PACKAGES)
-        self.run_command("mkdir -p %s" % cls.BASE_DIRECTORY)
-        self.run_command("mkdir -p %s" % cls.DATA_DIRECTORY)
+        base_path = "%s/%s" % (self.base_directory, self.config_file)
+        data_path = "%s/%s" % (self.data_directory, self.config_file)
+        base_s = " ".join(self.base_packages)
+        self.run_command("mkdir -p %s" % self.base_directory)
+        self.run_command("mkdir -p %s" % self.data_directory)
         self.run_command("ln -s %s %s" % (base_path, data_path))
         self.run_command("apt-get update")
         self.run_command("apt-get -y install %s" % base_s)
 
-    def run_config(self):
-        cls = self.__class__
-        items = self.environment.items()
-        base_path = "%s/%s" % (cls.BASE_DIRECTORY, cls.CONFIG_FILE)
+    def build_config(self):
+        instance = self.provision.get_instance()
+        items = instance.config.items()
+        config_path = "%s/%s" % (self.base_directory, self.config_file)
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
-        self.run_command("printf \"%s\" > %s" % (config_s, base_path))
+        self.run_command("printf \"%s\" > %s" % (config_s, config_path))
+
+    def build_provision(self):
+        name = self.provision.get_name()
+        items = self.provision.config.items()
+        provision_directory = "%s/%s" % (self.base_directory, name)
+        config_path = "%s/%s" % (provision_directory, self.config_file)
+        config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
+        self.run_command("mkdir -p %s" % provision_directory)
+        self.run_command("printf \"%s\" > %s" % (config_s, config_path))
 
     def run_script(self, url):
-        cls = self.__class__
         name = url.rsplit("/", 1)[1]
-        self.run_command("rm -rf %s && mkdir -p %s" % (cls.TEMP_DIRECTORY, cls.TEMP_DIRECTORY))
-        self.run_command("cd %s && wget %s" % (cls.TEMP_DIRECTORY, url))
-        self.run_command("cd %s && chmod +x %s && ./%s" % (cls.TEMP_DIRECTORY, name, name))
-        self.run_command("rm -rf %s" % cls.TEMP_DIRECTORY)
+        self.run_command("rm -rf %s && mkdir -p %s" % (self.temp_directory, self.temp_directory))
+        self.run_command("cd %s && wget %s" % (self.temp_directory, url))
+        self.run_command("cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name))
+        self.run_command("rm -rf %s" % self.temp_directory)
 
     def run_command(self, command, output = True, timeout = None, bufsize = -1):
         # builds the prefix string containing the various environment
@@ -163,12 +180,6 @@ class Deployer(appier.Observable):
             channel.close()
 
         return code
-
-    def get_instance(self):
-        return self.instance_c.singleton(
-            address = self.address,
-            form = False
-        )
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
