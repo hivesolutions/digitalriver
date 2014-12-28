@@ -19,5 +19,8 @@
         {% else %}
             <a href="{{ url_for('droplet.new_provision', id = droplet.id) }}">provision</a>
         {% endif %}
+        //
+        <a href="{{ url_for('droplet.sync', id = droplet.id) }}" class="warning link-confirm"
+           data-message="Do you really want to sync #{{ droplet.id }}  ?">sync</a>
     </div>
 {% endblock %}
