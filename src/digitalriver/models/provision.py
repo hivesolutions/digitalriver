@@ -97,6 +97,15 @@ class Provision(base.DRBase):
         self.config = zip(self.names, self.values)
         return self.config
 
+    def extra_config(self):
+        instance = self.get_instance()
+        self.join_config()
+        config = list(self.config)
+        for name, value in instance.config:
+            if name in self.names: continue
+            config.append([name, value])
+        return config
+
     def deploy(self):
         self.start()
         try:
