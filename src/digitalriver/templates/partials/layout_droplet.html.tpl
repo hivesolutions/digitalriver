@@ -9,9 +9,9 @@
         {% endif %}
         //
         {% if sub_link == "features" %}
-            <a href="#" class="active">features</a>
+            <a href="{{ url_for('droplet.features', id = droplet.id) }}" class="active">features</a>
         {% else %}
-            <a href="#">features</a>
+            <a href="{{ url_for('droplet.features', id = droplet.id) }}">features</a>
         {% endif %}
         //
         {% if sub_link == "config" %}

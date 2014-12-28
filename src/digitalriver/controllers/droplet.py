@@ -45,6 +45,20 @@ class DropletController(appier.Controller):
             droplet = droplet
         )
 
+    @appier.route("/droplets/<int:id>/features", "GET")
+    @appier.ensure("base")
+    def features(self, id):
+        url = self.ensure_api()
+        if url: return self.redirect(url)
+        api = self.get_api()
+        droplet = api.get_droplet(id)
+        return self.template(
+            "droplet/features.html.tpl",
+            link = "droplets",
+            sub_link = "features",
+            droplet = droplet
+        )
+
     @appier.route("/droplets/<int:id>/config", "GET")
     @appier.ensure("base")
     def config(self, id):
