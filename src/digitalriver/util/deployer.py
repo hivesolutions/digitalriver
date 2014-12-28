@@ -137,12 +137,12 @@ class Deployer(appier.Observable):
 
     def build_provision(self, data = None):
         name = self.provision.get_name()
-        items = self.provision.config
+        items = self.provision.join_config()
         provision_directory = "%s/%s" % (self.base_directory, name)
         config_path = "%s/%s" % (provision_directory, self.config_file)
         torus_path = "%s/%s" % (provision_directory, "torus.json")
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
-        self.run_command("mkdir -p %s" % provision_directory)
+        self.run_command("rm -rf %s && mkdir -p %s" % (provision_directory, provision_directory))
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
         if not data: return
         data_s = json.dumps(data)
