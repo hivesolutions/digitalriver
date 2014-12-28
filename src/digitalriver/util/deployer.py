@@ -93,7 +93,7 @@ class Deployer(appier.Observable):
             if instance.has_provision(dependency): continue
             self.deploy_url(dependency)
 
-        self.build_all()
+        self.build_all(data = data)
         self.run_script(build)
         self.close_ssh()
 
@@ -112,10 +112,10 @@ class Deployer(appier.Observable):
     def has_base(self):
         return self.run_command("ls %s" % self.base_directory, output = False) == 0
 
-    def build_all(self):
+    def build_all(self, data = None):
         self.build_base()
         self.build_config()
-        self.build_provision()
+        self.build_provision(data = data)
 
     def build_base(self):
         if self.has_base(): return
@@ -135,14 +135,18 @@ class Deployer(appier.Observable):
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
 
-    def build_provision(self):
+    def build_provision(self, data = None):
         name = self.provision.get_name()
         items = self.provision.config
         provision_directory = "%s/%s" % (self.base_directory, name)
         config_path = "%s/%s" % (provision_directory, self.config_file)
+        torus_path = "%s/%s" % (provision_directory, "torus.json")
         config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
         self.run_command("mkdir -p %s" % provision_directory)
         self.run_command("printf \"%s\" > %s" % (config_s, config_path))
+        if not data: return
+        data_s = json.dumps(data)
+        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (torus_path, data_s))
 
     def run_script(self, url):
         name = url.rsplit("/", 1)[1]
