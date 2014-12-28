@@ -12,6 +12,11 @@ try: import paramiko
 except: paramiko = None
 
 class Deployer(appier.Observable):
+    """
+    Base deployer class responsible for the deploying operations
+    under the Torus infra-structure. It's design should respect
+    a modular design so that it may be used in multiple back-ends.
+    """
 
     CONFIG_FILE = "config.env"
     """ The name of the file that is going to be used to store the
@@ -84,8 +89,7 @@ class Deployer(appier.Observable):
         self.run_script(build)
         self.close_ssh()
 
-        instance.features.append(url)
-        instance.save()
+        self.trigger("deployed", url)
 
     def start_torus(self, url, data):
         start = data.get("start", None)
@@ -185,8 +189,9 @@ class Deployer(appier.Observable):
         return self.ssh
 
     def close_ssh(self):
-        ssh = self.get_ssh()
-        ssh.close()
+        if not self.ssh: return
+        self.ssh.close()
+        self.ssh = None
 
     def _to_absolute(self, base, url):
         is_absolute = url.startswith("http://") or url.startswith("https://")
