@@ -125,6 +125,9 @@ class Instance(base.DRBase):
         self.config = zip(self.names, self.values)
         return self.config
 
+    def fname(self, url):
+        return url.rsplit("/", 2)[1]
+
     def get_id(self):
         id_s = self.iid[13:]
         return int(id_s)
