@@ -19,6 +19,8 @@ class ProvisionController(appier.Controller):
     @appier.ensure("base")
     def list_json(self):
         object = appier.get_object(alias = True, find = True)
+        has_sort = "sort" in object and object["sort"]
+        if not has_sort: object["sort"] = [("created", -1)]
         provisions = digitalriver.Provision.find(map = True, **object)
         return provisions
 
