@@ -10,7 +10,7 @@
                     <h3 class="status running">running</h3>
                 </div>
                 <div class="actions">
-                    <a href="#" class="warning link-confirm"
+                    <a href="{{ url_for('droplet.remove_feature', id = droplet.id, feature = feature) }}" class="warning link-confirm"
                        data-message="Do you really want to remove {{ instance.fname(feature) }} ?">remove</a>
                     //
                     <a href="#">stop</a>
