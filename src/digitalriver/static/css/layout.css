@@ -40,13 +40,13 @@
 }
 
 .features {
-	margin: 20px 0px 20px 0px;
+    margin: 20px 0px 20px 0px;
 }
 
 .feature {
-	padding: 12px 8px 12px 8px;
-	border-bottom: 1px solid transparent;
-	border-top: 1px solid #ebebeb;
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid #ebebeb;
+    padding: 12px 8px 12px 8px;
 }
 
 .feature:last-child {
@@ -54,22 +54,22 @@
 }
 
 .feature > .description {
-	float: left;
-	text-align: left;
+    float: left;
+    text-align: left;
 }
 
 .feature > .actions {
-	float: right;
+    float: right;
 }
 
 .feature h2 {
-	margin: 0px 0px 8px 0px;
-	font-size: 18px;
-	line-height: 22px;
+    font-size: 18px;
+    line-height: 22px;
+    margin: 0px 0px 8px 0px;
 }
 
 .feature h3 {
-	margin: 0px 0px 0px 0px;
-	font-size: 14px;
-	line-height: 18px;
+    font-size: 14px;
+    line-height: 18px;
+    margin: 0px 0px 0px 0px;
 }
