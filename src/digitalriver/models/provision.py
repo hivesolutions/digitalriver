@@ -186,12 +186,5 @@ class Provision(base.DRBase):
 
     def get_instance(self):
         from . import instance
-        iid = "digitalocean-" + str(self.droplet_id),
-        instance = instance.Instance.singleton(
-            iid = iid,
-            address = self.droplet_address,
-            form = False
-        )
-        instance.iid = iid
-        instance.address = self.droplet_address
+        instance = instance.Instance.by_id(self.droplet_id)
         return instance

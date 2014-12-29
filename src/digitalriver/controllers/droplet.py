@@ -124,6 +124,7 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/sync", "GET")
     @appier.ensure("base")
     def sync(self, id):
+        self._ensure(id, force = True)
         instance = digitalriver.Instance.by_id(id)
         instance.sync()
         return self.redirect(
@@ -144,9 +145,10 @@ class DropletController(appier.Controller):
             info = json.loads(info)
         return info
 
-    def _ensure(self, id):
+    def _ensure(self, id, force = False):
         instance = digitalriver.Instance.by_id(id)
-        if hasattr(instance, "id"): return instance
+        use_cached = hasattr(instance, "id") and not force
+        if use_cached: return instance
         url = self.ensure_api()
         if url: return url
         api = self.get_api()
