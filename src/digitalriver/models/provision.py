@@ -163,7 +163,7 @@ class Provision(base.DRBase):
                 self.url,
                 force = self.force
             )
-            deployer.instance = self.get_instance() 
+            deployer.instance = self.get_instance()
             deployer.deploy_url(
                 self.url,
                 force = self.force
