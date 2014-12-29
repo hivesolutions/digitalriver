@@ -87,7 +87,7 @@ class Deployer(appier.Observable):
         skip = self.instance.has_provision(url) and not force
         if skip: self.trigger("stdout", "Skipped '%s'" % url); return
 
-        build = data["build"]
+        build = data.get("build", None)
         build = self._to_absolute(url, build)
         dependencies = data.get("depends", [])
 
@@ -97,10 +97,32 @@ class Deployer(appier.Observable):
             self.deploy_url(dependency)
 
         self.build_all(data = data)
-        self.run_script(build, env = True)
+        build and self.run_script(build, env = True)
         self.close_ssh()
 
-        self.trigger("deployed", url)
+        self.trigger("deployed", url, data = data)
+
+    def undeploy_url(self, url, force = False):
+        data = appier.get(url)
+        is_dict = type(data) == dict
+
+        if not is_dict:
+            data = data.decode("utf-8")
+            data = json.loads(data)
+
+        self.undeploy_torus(url, data, force = force)
+
+    def undeploy_torus(self, url, data, force = False):
+        skip = not self.instance.has_provision(url)
+        if skip: self.trigger("stdout", "Skipped '%s'" % url); return
+
+        destroy = data.get("destroy", None)
+        destroy = self._to_absolute(url, destroy)
+
+        destroy and self.run_script(destroy, env = True)
+        self.close_ssh()
+
+        self.trigger("undeployed", url, data = data)
 
     def sync_torus(self):
         self.build_base()
@@ -176,7 +198,15 @@ class Deployer(appier.Observable):
         self.run_command("cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name), env = env)
         self.run_command("rm -rf %s" % self.temp_directory)
 
-    def run_command(self, command, env = False, output = True, timeout = None, bufsize = -1):
+    def run_command(
+        self,
+        command,
+        env = False,
+        output = True,
+        timeout = None,
+        bufsize = -1,
+        raise_e = True
+    ):
         # builds the prefix string containing the various environment
         # variables for the execution so that the command runs in context
         prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment])
@@ -207,7 +237,8 @@ class Deployer(appier.Observable):
         except:
             channel.close()
 
-        return code
+        if code == 0 or not raise_e: return code
+        raise RuntimeError("invalid return code '%d' in command execution" % code)
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
@@ -233,6 +264,8 @@ class Deployer(appier.Observable):
         self.ssh = None
 
     def _to_absolute(self, base, url):
+        if not base: return url
+        if not url: return url
         is_absolute = url.startswith("http://") or url.startswith("https://")
         if is_absolute: return url
         base = base.rsplit("/", 1)[0]
