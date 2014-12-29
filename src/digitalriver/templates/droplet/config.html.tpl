@@ -1,6 +1,6 @@
 {% extends "partials/layout_droplet.html.tpl" %}
 {% block title %}Droplets{% endblock %}
-{% block name %}Droplet #{{ droplet.id }}{% endblock %}
+{% block name %}Droplet :: #{{ droplet.id }}{% endblock %}
 {% block content %}
      <form action="{{ url_for('droplet.do_config', id = droplet.id) }}" method="post" class="form">
         <table class="table table-edit" data-error="{{ errors.names }}{{ errors.values }}">
