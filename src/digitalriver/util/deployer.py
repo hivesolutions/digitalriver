@@ -140,7 +140,11 @@ class Deployer(appier.Observable):
         self.run_command(stop)
 
     def has_base(self):
-        return self.run_command("ls %s" % self.base_directory, output = False) == 0
+        return self.run_command(
+            "ls %s" % self.base_directory,
+            output = False,
+            raise_e = False
+        ) == 0
 
     def build_all(self, data = None):
         self.build_base()
@@ -238,7 +242,7 @@ class Deployer(appier.Observable):
             channel.close()
 
         if code == 0 or not raise_e: return code
-        raise RuntimeError("invalid return code '%d' in command execution" % code)
+        raise RuntimeError("invalid return code '%d' in command execution '%s'" % (code, command))
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
