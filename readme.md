@@ -1,4 +1,4 @@
-# [DigitalRiver](http://digitalriver.hive.pt)
+# [![DigitalRiver](res/logo.png)](http://digitalriver.hive.pt)
 
 Simple test application for the DigitalOcean API library.
 
