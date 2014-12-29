@@ -17,6 +17,10 @@ class Provision(base.DRBase):
         default = True
     )
 
+    ptype = appier.field(
+        index = True
+    )
+
     pstatus = appier.field()
 
     droplet_id = appier.field(
@@ -90,7 +94,8 @@ class Provision(base.DRBase):
 
     def post_create(self):
         base.DRBase.post_create(self)
-        thread = threading.Thread(target = self.deploy)
+        method = getattr(self, self.ptype)
+        thread = threading.Thread(target = method)
         thread.start()
 
     def join_config(self):
@@ -124,10 +129,34 @@ class Provision(base.DRBase):
         except: self.cancel(); raise
         else: self.finish()
 
-    def mark(self, url):
+    def undeploy(self):
+        self.start()
+        try:
+            logger = self.create_logger()
+            deployer = self.owner.get_deployer(
+                address = self.droplet_address,
+                username = "root",
+                provision = self
+            )
+            deployer.bind("stdout", logger)
+            deployer.bind("undeployed", self.unmark)
+            deployer.undeploy_url(
+                self.url,
+                force = self.force
+            )
+        except: self.cancel(); raise
+        else: self.finish()
+
+    def mark(self, url, data = None):
         instance = self.get_instance()
         if url in instance.features: return
         instance.features.append(url)
+        instance.save()
+
+    def unmark(self, url, data = None):
+        instance = self.get_instance()
+        if not url in instance.features: return
+        instance.features.remove(url)
         instance.save()
 
     def create_logger(self):

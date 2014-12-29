@@ -3,6 +3,7 @@
 {% block name %}Droplet #{{ droplet.id }}{% endblock %}
 {% block content %}
     <form action="{{ url_for('droplet.create_provision', id = droplet.id) }}" method="post" class="form provision">
+        <input type="hidden" name="ptype" value="deploy" />
         <input type="hidden" name="droplet_id" value="{{ droplet.id }}" />
         <input type="hidden" name="droplet_address" value="{{ droplet.networks.v4[0].ip_address }}" />
         <div class="label">
