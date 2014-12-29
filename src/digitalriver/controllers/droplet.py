@@ -80,7 +80,11 @@ class DropletController(appier.Controller):
     @appier.ensure("base")
     def do_config(self, id):
         address = self.field("address", mandatory = True)
-        instance = digitalriver.Instance.singleton(address = address)
+        instance = digitalriver.Instance.singleton(
+            iid = "digitalocean-" + str(id),
+            address = address,
+            form = False
+        )
         instance.apply()
         try: instance.save()
         except appier.ValidationError as error:

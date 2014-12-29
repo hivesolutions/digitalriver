@@ -4,6 +4,7 @@
 {% block content %}
      <form action="{{ url_for('droplet.do_config', id = droplet.id) }}" method="post" class="form">
         <table class="table table-edit" data-error="{{ errors.names }}{{ errors.values }}">
+            <input name="iid" type="hidden" value="{{ 'digitalocean-' ~ droplet.id }}" />
             <input name="address" type="hidden" value="{{ droplet.networks.v4[0].ip_address }}" />
             <thead>
                 <tr>

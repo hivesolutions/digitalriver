@@ -67,7 +67,13 @@ class Instance(base.DRBase):
     @classmethod
     def by_droplet(cls, droplet):
         address = droplet["networks"]["v4"][0]["ip_address"]
-        instance = cls.singleton(address = address, form = False)
+        iid = "digitalocean-" + str(droplet["id"])
+        instance = cls.singleton(
+            iid = iid,
+            address = address,
+            form = False
+        )
+        instance.iid = iid
         instance.address = address
         return instance
 
