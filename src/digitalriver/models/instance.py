@@ -33,6 +33,10 @@ class Instance(base.DRBase):
         type = list
     )
 
+    droplet = appier.field(
+        type = dict
+    )
+
     provisions = appier.field(
         type = appier.references(
             provision.Provision,
@@ -65,9 +69,15 @@ class Instance(base.DRBase):
         instance.save()
 
     @classmethod
+    def ensure(cls, droplet):
+        instance = cls.by_droplet(droplet)
+        instance.save()
+        return instance
+
+    @classmethod
     def by_droplet(cls, droplet):
         address = droplet["networks"]["v4"][0]["ip_address"]
-        iid = "digitalocean-" + str(droplet["id"])
+        iid = cls.to_iid(droplet["id"])
         instance = cls.singleton(
             iid = iid,
             address = address,
@@ -75,7 +85,24 @@ class Instance(base.DRBase):
         )
         instance.iid = iid
         instance.address = address
+        instance.droplet = droplet
         return instance
+
+    @classmethod
+    def by_id(cls, id):
+        iid = cls.to_iid(id)
+        return cls.by_iid(iid)
+
+    @classmethod
+    def by_iid(cls, iid):
+        instance = cls.get(iid = iid, raise_e = False)
+        print(instance)
+        if instance: return instance
+        return cls.new(form = False)
+
+    @classmethod
+    def to_iid(cls, id):
+        return "digitalocean-" + str(id)
 
     def pre_validate(self):
         base.DRBase.pre_validate(self)
@@ -87,6 +114,7 @@ class Instance(base.DRBase):
         self.join_config()
 
     def sync(self):
+        if not self.address: return
         deployer = self.owner.get_deployer(
             address = self.address,
             username = "root",
@@ -97,6 +125,10 @@ class Instance(base.DRBase):
     def join_config(self):
         self.config = zip(self.names, self.values)
         return self.config
+
+    def get_id(self):
+        id_s = self.iid[13:]
+        return int(id_s)
 
     def has_feature(self, name):
         return hasattr(self, "features") and name in self.features
