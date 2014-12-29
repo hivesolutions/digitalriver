@@ -38,40 +38,37 @@ class DropletController(appier.Controller):
         if url: return self.redirect(url)
         api = self.get_api()
         droplet = api.get_droplet(id)
+        instance = digitalriver.Instance.ensure(droplet)
         return self.template(
             "droplet/show.html.tpl",
             link = "droplets",
             sub_link = "info",
-            droplet = droplet
+            droplet = droplet,
+            instance = instance
         )
 
     @appier.route("/droplets/<int:id>/features", "GET")
     @appier.ensure("base")
     def features(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)
+        instance = digitalriver.Instance.by_id(id)
+        instance.sync()
         return self.template(
             "droplet/features.html.tpl",
             link = "droplets",
             sub_link = "features",
-            droplet = droplet
+            droplet = instance.droplet,
+            instance = instance
         )
 
     @appier.route("/droplets/<int:id>/config", "GET")
     @appier.ensure("base")
     def config(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)
-        instance = digitalriver.Instance.by_droplet(droplet)
+        instance = digitalriver.Instance.by_id(id)
         return self.template(
             "droplet/config.html.tpl",
             link = "droplets",
             sub_link = "config",
-            droplet = droplet,
+            droplet = instance.droplet,
             instance = instance,
             errors = {}
         )
@@ -79,24 +76,15 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/config", "POST")
     @appier.ensure("base")
     def do_config(self, id):
-        address = self.field("address", mandatory = True)
-        instance = digitalriver.Instance.singleton(
-            iid = "digitalocean-" + str(id),
-            address = address,
-            form = False
-        )
+        instance = digitalriver.Instance.by_id(id)
         instance.apply()
         try: instance.save()
         except appier.ValidationError as error:
-            url = self.ensure_api()
-            if url: return self.redirect(url)
-            api = self.get_api()
-            droplet = api.get_droplet(id)
             return self.template(
                 "droplet/config.html.tpl",
                 link = "droplets",
                 sub_link = "config",
-                droplet = droplet,
+                droplet = error.model.droplet,
                 instance = error.model,
                 errors = error.errors
             )
@@ -107,15 +95,12 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/provision", "GET")
     @appier.ensure("base")
     def new_provision(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)
+        instance = digitalriver.Instance.by_id(id)
         return self.template(
             "droplet/provision.html.tpl",
             link = "droplets",
             sub_link = "provision",
-            droplet = droplet,
+            droplet = instance.droplet,
             provision = {},
             errors = {}
         )
@@ -126,15 +111,12 @@ class DropletController(appier.Controller):
         provision = digitalriver.Provision.new()
         try: provision.save()
         except appier.ValidationError as error:
-            url = self.ensure_api()
-            if url: return self.redirect(url)
-            api = self.get_api()
-            droplet = api.get_droplet(id)
+            instance = digitalriver.Instance.by_id(id)
             return self.template(
                 "droplet/provision.html.tpl",
                 link = "droplets",
                 sub_link = "provision",
-                droplet = droplet,
+                droplet = instance.droplet,
                 provision = error.model,
                 errors = error.errors
             )
@@ -145,11 +127,7 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/sync", "GET")
     @appier.ensure("base")
     def sync(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)
-        instance = digitalriver.Instance.by_droplet(droplet)
+        instance = digitalriver.Instance.by_id(id)
         instance.sync()
         return self.redirect(
             self.url_for(

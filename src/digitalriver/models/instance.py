@@ -96,7 +96,6 @@ class Instance(base.DRBase):
     @classmethod
     def by_iid(cls, iid):
         instance = cls.get(iid = iid, raise_e = False)
-        print(instance)
         if instance: return instance
         return cls.new(form = False)
 
