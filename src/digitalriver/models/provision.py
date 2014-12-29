@@ -147,6 +147,30 @@ class Provision(base.DRBase):
         except: self.cancel(); raise
         else: self.finish()
 
+    def redeploy(self):
+        self.start()
+        try:
+            logger = self.create_logger()
+            deployer = self.owner.get_deployer(
+                address = self.droplet_address,
+                username = "root",
+                provision = self
+            )
+            deployer.bind("stdout", logger)
+            deployer.bind("deployed", self.mark)
+            deployer.bind("undeployed", self.unmark)
+            deployer.undeploy_url(
+                self.url,
+                force = self.force
+            )
+            deployer.instance = self.get_instance() 
+            deployer.deploy_url(
+                self.url,
+                force = self.force
+            )
+        except: self.cancel(); raise
+        else: self.finish()
+
     def mark(self, url, data = None):
         instance = self.get_instance()
         if url in instance.features: return
