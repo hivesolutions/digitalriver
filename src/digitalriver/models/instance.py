@@ -8,9 +8,13 @@ from . import provision
 
 class Instance(base.DRBase):
 
-    address = appier.field(
+    iid = appier.field(
         index = True,
         default = True
+    )
+
+    address = appier.field(
+        index = True
     )
 
     names = appier.field(
