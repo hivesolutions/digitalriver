@@ -1,6 +1,6 @@
 {% extends "partials/layout_droplet.html.tpl" %}
 {% block title %}Droplets{% endblock %}
-{% block name %}Droplet #{{ droplet.id }}{% endblock %}
+{% block name %}Droplet :: #{{ droplet.id }}{% endblock %}
 {% block content %}
     <div class="quote">{{ droplet.name }}</div>
     <div class="separator-horizontal"></div>

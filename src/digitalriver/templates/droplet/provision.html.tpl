@@ -1,6 +1,6 @@
 {% extends "partials/layout_droplet.html.tpl" %}
 {% block title %}Droplets{% endblock %}
-{% block name %}Droplet #{{ droplet.id }}{% endblock %}
+{% block name %}Droplet :: #{{ droplet.id }}{% endblock %}
 {% block content %}
     <form action="{{ url_for('droplet.create_provision', id = droplet.id) }}" method="post" class="form provision">
         <input type="hidden" name="ptype" value="deploy" />
