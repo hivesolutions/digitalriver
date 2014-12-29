@@ -34,16 +34,14 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>", "GET")
     @appier.ensure("base")
     def show(self, id):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
-        api = self.get_api()
-        droplet = api.get_droplet(id)
-        instance = digitalriver.Instance.ensure(droplet)
+        instance = self._ensure(id)
+        is_url = type(instance) == str
+        if is_url: return self.redirect(instance)
         return self.template(
             "droplet/show.html.tpl",
             link = "droplets",
             sub_link = "info",
-            droplet = droplet,
+            droplet = instance.droplet,
             instance = instance
         )
 
@@ -145,3 +143,13 @@ class DropletController(appier.Controller):
             info = info.decode("utf-8")
             info = json.loads(info)
         return info
+
+    def _ensure(self, id):
+        instance = digitalriver.Instance.by_id(id)
+        if hasattr(instance, "id"): return instance
+        url = self.ensure_api()
+        if url: return url
+        api = self.get_api()
+        droplet = api.get_droplet(id)
+        instance = digitalriver.Instance.ensure(droplet)
+        return instance
