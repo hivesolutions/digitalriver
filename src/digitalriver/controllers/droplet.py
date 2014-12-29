@@ -51,7 +51,6 @@ class DropletController(appier.Controller):
     @appier.ensure("base")
     def features(self, id):
         instance = digitalriver.Instance.by_id(id)
-        instance.sync()
         return self.template(
             "droplet/features.html.tpl",
             link = "droplets",
