@@ -48,6 +48,10 @@ class Instance(base.DRBase):
     @classmethod
     def validate(cls):
         return super(Instance, cls).validate() + [
+            appier.not_null("iid"),
+            appier.not_empty("iid"),
+            appier.not_duplicate("iid", cls._name()),
+
             appier.not_null("address"),
             appier.not_empty("address"),
             appier.not_duplicate("address", cls._name())
