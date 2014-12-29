@@ -12,15 +12,15 @@
             <div class="table-clear"></div>
         </li>
         <li class="template table-row">
-        	<div class="text-left timestamp" data-width="100" data-format="%d/%m %H:%M">%[created]</div>
+            <div class="text-left timestamp" data-width="100" data-format="%d/%m %H:%M">%[created]</div>
             <div class="text-left" data-width="320">
                 <a href="{{ url_for('provision.show', pid = '') }}%[pid]">%[pid]</a>
             </div>
             <div class="text-right" data-width="80">
-            	<a href="{{ url_for('droplet.show', id = '') }}%[droplet_id]">#%[droplet_id]</a>
+                <a href="{{ url_for('droplet.show', id = '') }}%[droplet_id]">#%[droplet_id]</a>
             </div>
             <div class="text-right" data-width="80">
-            	<span class="%[pstatus]">%[pstatus]</span>
+                <span class="%[pstatus]">%[pstatus]</span>
             </div>
             <div class="table-clear"></div>
         </li>
@@ -31,5 +31,5 @@
             <span class="button more">Load more</span>
             <span class="button load">Loading</span>
         </div>
-    </ul>   
+    </ul>
 {% endblock %}

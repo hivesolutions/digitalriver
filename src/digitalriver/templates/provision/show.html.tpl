@@ -12,7 +12,7 @@
                     <span class="tag {{ provision.pstatus }}">{{ provision.pstatus }}</span>
                 </td>
             </tr>
-			<tr>
+            <tr>
                 <td class="right label" width="50%">type</td>
                 <td class="left value" width="50%">{{ provision.ptype }}</td>
             </tr>
@@ -31,16 +31,16 @@
         </tbody>
     </table>
     {% if provision.config %}
-    	<div class="separator-horizontal"></div>
-    	<table>
+        <div class="separator-horizontal"></div>
+        <table>
             <tbody>
-    			{% for key, value in provision.config %}
-					<tr>
-		                <td class="right label" width="50%">{{ key }}</td>
-		                <td class="left value" width="50%">{{ value }}</td>
-		            </tr>
-    			{% endfor %}
+                {% for key, value in provision.config %}
+                    <tr>
+                        <td class="right label" width="50%">{{ key }}</td>
+                        <td class="left value" width="50%">{{ value }}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
-    	</table>
+        </table>
     {% endif %}
 {% endblock %}
