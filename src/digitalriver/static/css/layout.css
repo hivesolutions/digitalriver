@@ -1,5 +1,9 @@
 @charset "utf-8";
 
+.footer-logo {
+    background-image: url(../images/logo-footer.png);
+}
+
 .log {
     background-color: #272822;
     color: #ffffff;
