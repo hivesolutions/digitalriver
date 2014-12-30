@@ -173,14 +173,19 @@ class Provision(base.DRBase):
 
     def mark(self, url, data = None):
         instance = self.get_instance()
-        if url in instance.features: return
-        instance.features.append(url)
+        if instance.has_feature(url): return
+        instance.add_feature(
+            url,
+            name = instance.fname(url),
+            data = data,
+            config = self.config
+        )
         instance.save()
 
     def unmark(self, url, data = None):
         instance = self.get_instance()
-        if not url in instance.features: return
-        instance.features.remove(url)
+        if not instance.has_feature(url): return
+        instance.remove_feature(url)
         instance.save()
 
     def create_logger(self):

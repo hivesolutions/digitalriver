@@ -4,6 +4,7 @@
 import appier
 
 from . import base
+from . import feature
 from . import provision
 
 class Instance(base.DRBase):
@@ -29,12 +30,19 @@ class Instance(base.DRBase):
         type = list
     )
 
-    features = appier.field(
-        type = list
-    )
-
     droplet = appier.field(
         type = dict
+    )
+
+    features_m = appier.field(
+        type = dict
+    )
+
+    features = appier.field(
+        type = appier.references(
+            feature.Feature,
+            name = "id"
+        )
     )
 
     provisions = appier.field(
@@ -128,12 +136,29 @@ class Instance(base.DRBase):
     def fname(self, url):
         return url.rsplit("/", 2)[1]
 
+    def add_feature(self, url, **kwargs):
+        if url in self.features_m: return
+        _feature = feature.Feature(url = url, **kwargs)
+        self.feature_m[url] = True
+        self.features.append(_feature)
+
+    def remove_feature(self, url):
+        if not url in self.features_m: return
+        _feature = self.get_feature(url)
+        del self.feature_m[url]
+        self.features.remove(_feature)
+
     def get_id(self):
         id_s = self.iid[13:]
         return int(id_s)
 
+    def get_feature(self, url):
+        for feature in self.features:
+            if not feature.url == url: continue
+            return feature
+
     def has_feature(self, name):
-        return hasattr(self, "features") and name in self.features
+        return hasattr(self, "features") and name in self.features_m
 
     def has_provision(self, name):
         return self.has_feature(name)
