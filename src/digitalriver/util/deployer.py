@@ -119,6 +119,7 @@ class Deployer(appier.Observable):
         destroy = data.get("destroy", None)
         destroy = self._to_absolute(url, destroy)
 
+        self.destroy_feature()
         destroy and self.run_script(destroy, env = True)
         self.close_ssh()
 
@@ -194,6 +195,11 @@ class Deployer(appier.Observable):
         self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (stop_path, stop_s))
         self.run_command("chmod +x %s" % start_path)
         self.run_command("chmod +x %s" % stop_path)
+
+    def destroy_feature(self):
+        name = self.provision.get_name()
+        provision_directory = "%s/features/%s" % (self.base_directory, name)
+        self.run_command("rm -rf %s" % provision_directory)
 
     def run_script(self, url, env = False):
         name = url.rsplit("/", 1)[1]
