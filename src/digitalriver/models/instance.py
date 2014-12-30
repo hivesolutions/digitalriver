@@ -151,12 +151,13 @@ class Instance(base.DRBase):
         self.features_m[url_hash] = True
         self.features.append(_feature)
 
-    def remove_feature(self, url):
+    def remove_feature(self, url, delete = True):
         url_hash = self.fhash(url)
         if not url_hash in self.features_m: return
         _feature = self.get_feature(url)
         del self.features_m[url_hash]
         self.features.remove(_feature)
+        if delete: _feature.delete()
 
     def get_id(self):
         id_s = self.iid[13:]
