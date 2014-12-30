@@ -15,6 +15,7 @@ The concept is to build simple JSON based files that define the way the feature 
 ```json
 {
     "build" : "build.sh",
+    "destroy" : "destroy.sh",
     "start" : "docker start hello_service",
     "stop" : "docker stop hello_service",
     "depends" : [
