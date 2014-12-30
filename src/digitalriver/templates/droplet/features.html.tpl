@@ -7,7 +7,7 @@
             {% for feature in instance.features %}
                 <div class="feature">
                     <div class="description">
-                        <h2 class="name">{{ instance.fname(feature) }}</h2>
+                        <h2 class="name">{{ feature.name }}</h2>
                         <h3 class="status running">running</h3>
                     </div>
                     <div class="actions">
@@ -15,11 +15,11 @@
                             <a href="#">stop</a>
                         </div>
                         <div class="line">
-                            <a href="{{ url_for('droplet.remove_feature', id = droplet.id, feature = feature) }}" class="warning link-confirm"
-                               data-message="Do you really want to remove {{ instance.fname(feature) }} ?">remove</a>
+                            <a href="{{ url_for('droplet.remove_feature', id = droplet.id, feature = feature.url) }}" class="warning link-confirm"
+                               data-message="Do you really want to remove {{ feature.name }} ?">remove</a>
                             //
-                            <a href="{{ url_for('droplet.rebuild_feature', id = droplet.id, feature = feature) }}" class="warning link-confirm"
-                               data-message="Do you really want to rebuild {{ instance.fname(feature) }} ?">rebuild</a>
+                            <a href="{{ url_for('droplet.rebuild_feature', id = droplet.id, feature = feature.url) }}" class="warning link-confirm"
+                               data-message="Do you really want to rebuild {{ feature.name }} ?">rebuild</a>
                         </div>
                     </div>
                     <div class="clear"></div>
