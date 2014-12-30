@@ -32,7 +32,7 @@ class Deployer(appier.Observable):
     """ The temporary directory that is going to be used in the
     build process and any other ephemeral operations """
 
-    BASE_PACKAGES = ("ruby", "nodejs")
+    BASE_PACKAGES = ("python", "python-dev", "ruby", "nodejs")
     """ Sequence containing the various packages that are considered
     to be foundation and that should always be installed """
 
