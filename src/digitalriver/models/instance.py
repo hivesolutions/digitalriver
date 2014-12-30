@@ -139,13 +139,14 @@ class Instance(base.DRBase):
     def add_feature(self, url, **kwargs):
         if url in self.features_m: return
         _feature = feature.Feature(url = url, **kwargs)
-        self.feature_m[url] = True
+        _feature.save()
+        self.features_m[url] = True
         self.features.append(_feature)
 
     def remove_feature(self, url):
         if not url in self.features_m: return
         _feature = self.get_feature(url)
-        del self.feature_m[url]
+        del self.features_m[url]
         self.features.remove(_feature)
 
     def get_id(self):
