@@ -90,6 +90,7 @@ class Provision(base.DRBase):
 
     def pre_save(self):
         base.DRBase.pre_save(self)
+        self.split_config()
         self.join_config()
 
     def post_create(self):
@@ -98,7 +99,14 @@ class Provision(base.DRBase):
         thread = threading.Thread(target = method)
         thread.start()
 
+    def split_config(self):
+        if not hasattr(self, "config") or not self.config: return
+        if hasattr(self, "names") and self.names: return
+        if hasattr(self, "values") and self.values: return
+        self.names, self.values = zip(*self.config)
+
     def join_config(self):
+        if self.config: return self.config
         self.config = zip(self.names, self.values)
         return self.config
 
