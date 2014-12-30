@@ -138,20 +138,23 @@ class Instance(base.DRBase):
     def fname(self, url):
         return url.rsplit("/", 2)[1]
 
+    def fhash(self, url):
+        url_bytes = appier.legacy.bytes(url)
+        url_md5 = hashlib.md5(url_bytes)
+        return url_md5.hexdigest()
+
     def add_feature(self, url, **kwargs):
-        if url in self.features_m: return
+        url_hash = self.fhash(url)
+        if url_hash in self.features_m: return
         _feature = feature.Feature(url = url, **kwargs)
         _feature.save()
-        url_bytes = appier.legacy.bytes(url)
-        url_hash = hashlib.md5(url_bytes).hexdigest()
         self.features_m[url_hash] = True
         self.features.append(_feature)
 
     def remove_feature(self, url):
-        if not url in self.features_m: return
+        url_hash = self.fhash(url)
+        if not url_hash in self.features_m: return
         _feature = self.get_feature(url)
-        url_bytes = appier.legacy.bytes(url)
-        url_hash = hashlib.md5(url_bytes).hexdigest()
         del self.features_m[url_hash]
         self.features.remove(_feature)
 
@@ -165,8 +168,7 @@ class Instance(base.DRBase):
             return feature
 
     def has_feature(self, url):
-        url_bytes = appier.legacy.bytes(url)
-        url_hash = hashlib.md5(url_bytes).hexdigest()
+        url_hash = self.fhash(url)
         return hasattr(self, "features") and url_hash in self.features_m
 
     def has_provision(self, url):
