@@ -106,7 +106,7 @@ class Provision(base.DRBase):
         self.names, self.values = zip(*self.config)
 
     def join_config(self):
-        if self.config: return self.config
+        if hasattr(self, "config") and self.config: return self.config
         self.config = zip(self.names, self.values)
         return self.config
 
