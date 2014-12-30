@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import hashlib
+
 import appier
 
 from . import base
@@ -140,13 +142,17 @@ class Instance(base.DRBase):
         if url in self.features_m: return
         _feature = feature.Feature(url = url, **kwargs)
         _feature.save()
-        self.features_m[url] = True
+        url_bytes = appier.legacy.bytes(url)
+        url_hash = hashlib.md5(url_bytes).hexdigest()
+        self.features_m[url_hash] = True
         self.features.append(_feature)
 
     def remove_feature(self, url):
         if not url in self.features_m: return
         _feature = self.get_feature(url)
-        del self.features_m[url]
+        url_bytes = appier.legacy.bytes(url)
+        url_hash = hashlib.md5(url_bytes).hexdigest()
+        del self.features_m[url_hash]
         self.features.remove(_feature)
 
     def get_id(self):
@@ -158,8 +164,10 @@ class Instance(base.DRBase):
             if not feature.url == url: continue
             return feature
 
-    def has_feature(self, name):
-        return hasattr(self, "features") and name in self.features_m
+    def has_feature(self, url):
+        url_bytes = appier.legacy.bytes(url)
+        url_hash = hashlib.md5(url_bytes).hexdigest()
+        return hasattr(self, "features") and url_hash in self.features_m
 
-    def has_provision(self, name):
-        return self.has_feature(name)
+    def has_provision(self, url):
+        return self.has_feature(url)
