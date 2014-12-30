@@ -140,14 +140,17 @@ class DropletController(appier.Controller):
     @appier.route("/droplets/<int:id>/feature/rebuild", "GET")
     @appier.ensure("base")
     def rebuild_feature(self, id):
-        feature = self.field("feature", mandatory = True)
+        url = self.field("feature", mandatory = True)
         instance = digitalriver.Instance.by_id(id)
         droplet = instance.droplet
+        feature = instance.get_feature(url)
+        config = feature.config
         provision = digitalriver.Provision.new()
         provision.ptype = "redeploy"
         provision.droplet_id = droplet["id"]
         provision.droplet_address = instance.address
-        provision.url = feature
+        provision.url = url
+        provision.config = config 
         provision.save()
         return self.redirect(
             self.url_for("provision.log", pid = provision.pid)
