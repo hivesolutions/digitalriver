@@ -178,7 +178,7 @@ class Provision(base.DRBase):
             url,
             name = instance.fname(url),
             data = data,
-            config = self.config
+            config = self.join_config()
         )
         instance.save()
 
