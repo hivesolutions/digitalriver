@@ -150,7 +150,7 @@ class DropletController(appier.Controller):
         provision.droplet_id = droplet["id"]
         provision.droplet_address = instance.address
         provision.url = url
-        provision.config = config 
+        provision.config = config
         provision.save()
         return self.redirect(
             self.url_for("provision.log", pid = provision.pid)
