@@ -229,6 +229,10 @@ class Deployer(appier.Observable):
         channel = transport.open_session()
 
         try:
+            # sets the proper timeout for the connection and then combines
+            # both the stdout and the stderr into the same channel, after
+            # that creates two files for the operation and executes the
+            # command itself around the provided buffer
             channel.settimeout(timeout)
             channel.set_combine_stderr(True)
             _stdin = channel.makefile("wb", bufsize)
