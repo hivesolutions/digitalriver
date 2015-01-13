@@ -173,6 +173,7 @@ class Deployer(appier.Observable):
         exec_s = "#!/bin/sh -e\n%s\nexit 0" % start_path
         self.run_command("echo \"%s\" > /etc/rc.local" % exec_s)
         self.copy_directory(scripts_path, self.base_directory)
+        self.run_command("chmod +x %s/*.sh" % self.base_directory)
 
     def build_config(self):
         items = self.instance.config
