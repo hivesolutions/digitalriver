@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 import json
 
@@ -72,6 +73,7 @@ class Deployer(appier.Observable):
         self.temp_directory = temp_directory or cls.TEMP_DIRECTORY
         self.base_packages = base_packages or cls.BASE_PACKAGES
         self.ssh = None
+        self.sftp = None
 
     def deploy_url(self, url, force = False):
         data = appier.get(url)
@@ -165,9 +167,12 @@ class Deployer(appier.Observable):
         self.run_command("apt-get -y install %s" % base_s)
 
     def build_exec(self):
+        base_path = os.path.dirname(__file__)
+        scripts_path = os.path.join(base_path, "scripts")
         start_path = "%s/%s" % (self.base_directory, "start.sh")
         exec_s = "#!/bin/sh -e\n%s\nexit 0" % start_path
         self.run_command("echo \"%s\" > /etc/rc.local" % exec_s)
+        self.copy_directory(scripts_path, self.base_directory)
 
     def build_config(self):
         items = self.instance.config
@@ -254,6 +259,17 @@ class Deployer(appier.Observable):
         if code == 0 or not raise_e: return code
         raise RuntimeError("invalid return code '%d' in command execution '%s'" % (code, command))
 
+    def copy_directory(self, local_path, remote_path):
+        names = os.listdir(local_path)
+        for name in names:
+            _local_path = os.path.join(local_path, name)
+            _remote_path = "%s/%s" % (remote_path, name)
+            self.copy_file(_local_path, _remote_path)
+
+    def copy_file(self, local_path, remote_path):
+        sftp = self.get_sftp()
+        sftp.put(local_path, remote_path)
+
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
         # forced is ensured, returns the current connection
@@ -276,6 +292,17 @@ class Deployer(appier.Observable):
         if not self.ssh: return
         self.ssh.close()
         self.ssh = None
+
+    def get_sftp(self, force = False):
+        if self.sftp and not force: return self.sftp
+        ssh = self.get_ssh(force = force)
+        self.sftp = ssh.open_sftp()
+        return self.sftp
+
+    def close_sftp(self):
+        if not self.sftp: return
+        self.sftp.close()
+        self.sftp = None
 
     def _to_absolute(self, base, url):
         if not base: return url
