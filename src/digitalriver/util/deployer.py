@@ -267,13 +267,23 @@ class Deployer(appier.Observable):
             _remote_path = "%s/%s" % (remote_path, name)
             self.copy_file(_local_path, _remote_path)
 
-    def copy_file(self, local_path, remote_path, replace = True):
-        sftp = self.get_sftp()
+    def copy_file(self, local_path, remote_path, replace = True, sftp = None):
+        owner = sftp == None
+        sftp = sftp or self.get_sftp()
         try:
-            if replace: sftp.remove(remote_path)
+            exists = self.exists_file(remote_path, sftp = sftp)
+            if exists and replace: sftp.remove(remote_path)
             sftp.put(local_path, remote_path)
         finally:
-            self.close_sftp()
+            owner and self.close_sftp()
+
+    def exists_file(self, remote_path, sftp = None):
+        owner = sftp == None
+        sftp = sftp or self.get_sftp()
+        try: sftp.stat(remote_path)
+        except IOError: return False
+        finally: owner and self.close_sftp()
+        return True
 
     def get_ssh(self, force = False):
         # in case the ssh connection already exists and no
