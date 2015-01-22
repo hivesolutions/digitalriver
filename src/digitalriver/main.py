@@ -16,6 +16,9 @@ class DigitalriverApp(appier.WebApp):
                 appier_extras.AdminPart,
             )
         )
+        self.theme = "modern"
+        self.style = "romantic"
+        self.libs = "current"
         self.login_route = "base.signin"
 
     @appier.exception_handler(appier.OAuthAccessError)
