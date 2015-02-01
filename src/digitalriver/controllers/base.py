@@ -5,8 +5,6 @@ import time
 
 import appier
 
-SPEC_URL = "https://raw.githubusercontent.com/hivesolutions/config/master/instances/base/docker.sh"
-
 class BaseController(appier.Controller):
 
     @appier.route("/", "GET")
@@ -65,10 +63,8 @@ class BaseController(appier.Controller):
         )
 
     @appier.route("/deploy", ("GET", "POST"))
+    @appier.ensure("base")
     def deploy(self):
-        spec_url = self.field("spec_url", SPEC_URL)
-        url = self.ensure_api(state = spec_url)
-        if url: return self.redirect(url)
         api = self.get_api()
         droplet = dict(
             name = self.field("name", "digitalriver"),
