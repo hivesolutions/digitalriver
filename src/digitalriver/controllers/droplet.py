@@ -12,8 +12,6 @@ class DropletController(appier.Controller):
     @appier.route("/droplets", "GET")
     @appier.ensure("base")
     def list(self):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
         return self.template(
             "droplet/list.html.tpl",
             link = "droplets"
@@ -22,8 +20,6 @@ class DropletController(appier.Controller):
     @appier.route("/droplets.json", "GET", json = True)
     @appier.ensure("base")
     def list_json(self):
-        url = self.ensure_api()
-        if url: return self.redirect(url)
         api = self.get_api()
         start = self.field("start_record", 0, cast = int)
         count = self.field("number_records", 10, cast = int)
@@ -184,8 +180,6 @@ class DropletController(appier.Controller):
         instance = digitalriver.Instance.by_id(id)
         use_cached = hasattr(instance, "id") and not force
         if use_cached: return instance
-        url = self.ensure_api()
-        if url: return url
         api = self.get_api()
         droplet = api.get_droplet(id)
         instance = digitalriver.Instance.ensure(droplet)
