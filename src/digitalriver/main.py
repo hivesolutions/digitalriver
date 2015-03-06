@@ -16,7 +16,6 @@ class DigitalriverApp(appier.WebApp):
                 appier_extras.AdminPart,
             )
         )
-        self.layout = "fluid"
         self.theme = "modern"
         self.style = "romantic"
         self.libs = "current"
