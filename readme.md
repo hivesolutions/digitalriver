@@ -10,6 +10,8 @@ It's often difficult to be able to deploy constant infra-structure across a grid
 
 The concept is to build simple JSON based files that define the way the feature is configured/build and/or destroyed. A simple bash script file should run the various steps to build the feature in the machine.
 
+It should be possible to "recover" the state of the node from it's local information, avoiding the need for a contant centralized data source managed state.
+
 ## Example
 
 ```json
