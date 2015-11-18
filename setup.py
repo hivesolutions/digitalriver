@@ -35,7 +35,8 @@ setuptools.setup(
         ]
     },
     install_requires = [
-        "appier"
+        "appier",
+        "digitalocean_api"
     ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
