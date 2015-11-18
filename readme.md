@@ -12,7 +12,7 @@ The concept is to build simple JSON based files that define the way the feature 
 
 It should be possible to "recover" the state of the node from it's local information, avoiding the need for a constant centralized data source managed state.
 
-The main engine is named **Torus** and is deployed as part of the base infra-structure required for the running of the provisioning tasks.
+The main engine is named **Torus** and is deployed as part of the base infra-structure required for the running of the **provisioning tasks** that deploye the **features** associated with the **instance**.
 
 ## Example
 
