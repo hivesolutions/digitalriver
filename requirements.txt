@@ -1,2 +1,2 @@
 appier
-digitalocean_api
+digitalocean_api_python
