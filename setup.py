@@ -30,7 +30,7 @@ setuptools.setup(
             "static/js/*",
             "templates/*.tpl",
             "templates/droplet/*.tpl",
-            "templates/partials/*.tpl"
+            "templates/partials/*.tpl",
             "templates/provision/*.tpl"
         ]
     },
