@@ -1,0 +1,52 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+import setuptools
+
+setuptools.setup(
+    name = "digitalriver",
+    version = "0.1.0",
+    author = "Hive Solutions Lda.",
+    author_email = "development@hive.pt",
+    description = "DigitalRiver",
+    license = "Apache License, Version 2.0",
+    keywords = "digitalriver pas deployment",
+    url = "http://digitalriver.hive.pt",
+    zip_safe = False,
+    packages = [
+        "digitalriver",
+        "digitalriver.controllers",
+        "digitalriver.models",
+        "digitalriver.util"
+    ],
+    test_suite = "appier.test",
+    package_dir = {
+        "" : os.path.normpath("src")
+    },
+    package_data = {
+        "digitalriver" : [
+            "static/css/*",
+            "static/images/*",
+            "static/js/*",
+            "templates/*",
+            "templates/droplet/*",
+            "templates/partials/*"
+            "templates/provision/*"
+        ]
+    },
+    classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Topic :: Utilities",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.0",
+        "Programming Language :: Python :: 3.1",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4"
+    ]
+)
