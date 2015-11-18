@@ -34,3 +34,13 @@ The main engine is named **Torus** and is deployed as part of the base infra-str
     ]
 }
 ```
+
+## License
+
+DigitalRiver is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+
+## Build Automation
+
+[![Build Status](https://travis-ci.org/hivesolutions/digitalriver.svg?branch=master)](https://travis-ci.org/hivesolutions/digitalriver)
+[![Coverage Status](https://coveralls.io/repos/hivesolutions/digitalriver/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/digitalriver?branch=master)
+[![PyPi Status](https://img.shields.io/pypi/v/digitalriver.svg)](https://pypi.python.org/pypi/digitalriver)
