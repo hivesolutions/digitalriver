@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name = "digitalriver",
-    version = "0.1.2",
+    version = "0.1.3",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "DigitalRiver",
@@ -35,6 +35,7 @@ setuptools.setup(
         ]
     },
     install_requires = [
+        "pushi",
         "appier",
         "digitalocean_api_python"
     ],
