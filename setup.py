@@ -20,7 +20,6 @@ setuptools.setup(
         "digitalriver.models",
         "digitalriver.util"
     ],
-    test_suite = "appier.test",
     package_dir = {
         "" : os.path.normpath("src")
     },
@@ -35,6 +34,9 @@ setuptools.setup(
             "templates/provision/*"
         ]
     },
+    install_requires = [
+        "appier"
+    ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
