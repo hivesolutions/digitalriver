@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name = "digitalriver",
-    version = "0.1.1",
+    version = "0.1.2",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "DigitalRiver",
@@ -28,10 +28,10 @@ setuptools.setup(
             "static/css/*",
             "static/images/*",
             "static/js/*",
-            "templates/*",
-            "templates/droplet/*",
-            "templates/partials/*"
-            "templates/provision/*"
+            "templates/*.tpl",
+            "templates/droplet/*.tpl",
+            "templates/partials/*.tpl"
+            "templates/provision/*.tpl"
         ]
     },
     install_requires = [
