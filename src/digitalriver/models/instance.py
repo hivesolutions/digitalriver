@@ -126,6 +126,7 @@ class Instance(base.DRBase):
         base.DRBase.pre_save(self)
         self.join_config()
 
+    @appier.operation(name = "Sync")
     def sync(self):
         if not self.address: return
         deployer = self.owner.get_deployer(
