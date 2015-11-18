@@ -82,6 +82,10 @@ class Provision(base.DRBase):
             appier.not_null("force")
         ]
 
+    @classmethod
+    def list_names(cls):
+        return ["id", "created", "pid", "droplet_id"]
+
     def pre_validate(self):
         base.DRBase.pre_validate(self)
         if self.is_new(): self.pid = str(uuid.uuid4())
@@ -119,6 +123,7 @@ class Provision(base.DRBase):
             config.append([name, value])
         return config
 
+    @appier.operation(name = "Deploy")
     def deploy(self):
         self.start()
         try:
@@ -137,6 +142,7 @@ class Provision(base.DRBase):
         except: self.cancel(); raise
         else: self.finish()
 
+    @appier.operation(name = "Undeploy")
     def undeploy(self):
         self.start()
         try:
@@ -155,6 +161,7 @@ class Provision(base.DRBase):
         except: self.cancel(); raise
         else: self.finish()
 
+    @appier.operation(name = "Re-Deploy")
     def redeploy(self):
         self.start()
         try:

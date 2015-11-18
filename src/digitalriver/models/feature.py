@@ -9,11 +9,12 @@ class Feature(base.DRBase):
 
     url = appier.field(
         index = True,
-        default = True
+        meta = "url"
     )
 
     name = appier.field(
-        index = True
+        index = True,
+        default = True
     )
 
     data = appier.field(
@@ -34,3 +35,7 @@ class Feature(base.DRBase):
             appier.not_null("name"),
             appier.not_empty("name")
         ]
+
+    @classmethod
+    def list_names(cls):
+        return ["id", "name"]

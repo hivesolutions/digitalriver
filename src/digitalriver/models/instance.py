@@ -72,6 +72,10 @@ class Instance(base.DRBase):
         ]
 
     @classmethod
+    def list_names(cls):
+        return ["id", "iid", "address"]
+
+    @classmethod
     def provision_post_create(cls, ctx):
         instance = ctx.get_instance()
         instance.address = ctx.droplet_address
