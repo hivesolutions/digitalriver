@@ -9,19 +9,19 @@
             var key = element.attr("data-key");
             var channel = element.attr("data-channel");
             var pushi = new Pushi(key, {
-                        baseUrl : url
-                    });
+                baseUrl: url
+            });
 
             pushi.bind("connect", function(event) {
-                        pushi.subscribe(channel);
-                    });
+                pushi.subscribe(channel);
+            });
 
             pushi.bind("stdout", function(event, data, channel) {
-                        data = data.replace("\n", "<br/>");
-                        data = data.replace(" ", "&nbsp;");
-                        element.append("<div class=\"line\">" + data + "</div>");
-                        scrollBottom(element);
-                    });
+                data = data.replace("\n", "<br/>");
+                data = data.replace(" ", "&nbsp;");
+                element.append("<div class=\"line\">" + data + "</div>");
+                scrollBottom(element);
+            });
 
             // if the current pushi connection for the url is already connected
             // then the subscription process is executed immediately
@@ -31,8 +31,8 @@
             // schedules a next tick operation to scroll the current element down
             // so that the proper initial log contents are display properly
             setTimeout(function() {
-                        scrollBottom(element);
-                    });
+                scrollBottom(element);
+            });
         };
 
         var scrollBottom = function(element) {
@@ -43,9 +43,9 @@
         // iterates over the complete set of element in the
         // matched object to be able to initialize the elements
         matchedObject.each(function(element, index) {
-                    var _element = jQuery(this);
-                    initialize(_element);
-                });
+            var _element = jQuery(this);
+            initialize(_element);
+        });
 
         // returns the object to the caller function/method
         // so that it may be chained in other executions
@@ -88,13 +88,12 @@
             // a proper json encoded config file from which the configuration
             // lines may be extracted and used for configuration
             jQuery.ajax({
-                url : "/droplets/" + dropletId + "/process",
-                data : {
-                    url : value
+                url: "/droplets/" + dropletId + "/process",
+                data: {
+                    url: value
                 },
-                error : function(request, status, error) {
-                },
-                success : function(data) {
+                error: function(request, status, error) {},
+                success: function(data) {
                     var config = data.config;
                     if (!config) {
                         return;
@@ -102,13 +101,13 @@
 
                     for (var index = 0; index < config.length; index++) {
                         var item = config[index];
-                        extras.append("<input type=\"hidden\" name=\"names\" value=\""
-                                + item.name + "\" />");
-                        extras.append("<div class=\"label\">" + "<label>"
-                                + item.name + "</label>" + "</div>");
-                        extras.append("<div class=\"input\">"
-                                + "<input class=\"text-field\" name=\"values\" value=\""
-                                + item["default"] + "\" />" + "</div>");
+                        extras.append("<input type=\"hidden\" name=\"names\" value=\"" +
+                            item.name + "\" />");
+                        extras.append("<div class=\"label\">" + "<label>" + item.name +
+                            "</label>" + "</div>");
+                        extras.append("<div class=\"input\">" +
+                            "<input class=\"text-field\" name=\"values\" value=\"" +
+                            item["default"] + "\" />" + "</div>");
                     }
                 }
             });
@@ -138,8 +137,8 @@
 })(jQuery);
 
 jQuery(document).ready(function() {
-            var _body = jQuery("body");
-            _body.bind("applied", function(event, base) {
-                        base.uapply();
-                    });
-        });
+    var _body = jQuery("body");
+    _body.bind("applied", function(event, base) {
+        base.uapply();
+    });
+});
