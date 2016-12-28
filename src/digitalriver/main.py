@@ -60,3 +60,5 @@ class DigitalriverApp(appier.WebApp):
 if __name__ == "__main__":
     app = DigitalriverApp()
     app.serve()
+else:
+    __path__ = []
