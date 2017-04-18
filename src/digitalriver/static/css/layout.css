@@ -25,6 +25,7 @@
 
 .button.login {
     background: transparent url(../images/login.png) no-repeat left 0px;
+    border-bottom: none;
     display: inline-block;
     height: 38px;
     padding-bottom: 0px;
@@ -33,7 +34,6 @@
 
 .button.login:hover {
     background-position: left -38px;
-    border-bottom: none;
 }
 
 .button.login.click {
