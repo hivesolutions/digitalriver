@@ -25,7 +25,7 @@
 
             // if the current pushi connection for the url is already connected
             // then the subscription process is executed immediately
-            var isConnected = pushi.state == "connected";
+            var isConnected = pushi.state === "connected";
             isConnected && pushi.subscribe(channel);
 
             // schedules a next tick operation to scroll the current element down
