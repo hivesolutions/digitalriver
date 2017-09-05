@@ -51,7 +51,7 @@ class DigitalriverApp(appier.WebApp):
         return digitalriver.util.Deployer(*args, **kwargs)
 
     def _get_api(self):
-        return digitalocean.Api(
+        return digitalocean.API(
             client_id = appier.conf("DO_ID"),
             client_secret = appier.conf("DO_SECRET"),
             redirect_url = appier.conf("DO_REDIRECT_URL")
