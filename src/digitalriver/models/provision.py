@@ -224,15 +224,18 @@ class Provision(base.DRBase):
 
     def create_pushi(self):
 
-        def on_connect(connection):
-            connection.subscribe_pushi(self.pid)
+        def on_connect(protocol):
+            protocol.subscribe_pushi(self.pid)
 
         client_key = appier.conf("PUSHI_KEY")
-        client = pushi.PushiClient(client_key = client_key)
-        connection = client.connect_pushi(callback = on_connect)
+
+        _loop, protocol = pushi.net.PushiClient.connect_pushi_s(
+            client_key = client_key,
+            callback = on_connect
+        )
 
         def logger(message):
-            connection.send_channel("stdout", message, self.pid, persist = False)
+            protocol.send_channel("stdout", message, self.pid, persist = False)
 
         return logger
 
