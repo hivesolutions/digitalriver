@@ -1,6 +1,7 @@
 @charset "utf-8";
 
-.footer-logo {
+.footer-logo,
+.footer-logo:not(.button-no-style) {
     background-image: url(../images/logo-footer.png);
 }
 
