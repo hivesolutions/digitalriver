@@ -8,7 +8,7 @@ import json
 import appier
 
 try: import paramiko
-except: paramiko = None
+except ImportError: paramiko = None
 
 class Deployer(appier.Observable):
     """
@@ -254,7 +254,7 @@ class Deployer(appier.Observable):
                 self.trigger("stdout", data)
 
             code = channel.recv_exit_status()
-        except:
+        except Exception:
             channel.close()
 
         if code == 0 or not raise_e: return code
