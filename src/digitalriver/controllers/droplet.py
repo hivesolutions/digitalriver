@@ -10,7 +10,7 @@ import digitalriver
 class DropletController(appier.Controller):
 
     @appier.route("/droplets", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def list(self):
         return self.template(
             "droplet/list.html.tpl",
@@ -18,7 +18,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets.json", "GET", json = True)
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def list_json(self):
         api = self.get_api()
         start = self.field("start_record", 0, cast = int)
@@ -28,7 +28,7 @@ class DropletController(appier.Controller):
         return droplets
 
     @appier.route("/droplets/<int:id>", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def show(self, id):
         instance = self._ensure(id)
         is_url = type(instance) == str
@@ -42,7 +42,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/features", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def features(self, id):
         instance = digitalriver.Instance.by_id(id)
         return self.template(
@@ -54,7 +54,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/config", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def config(self, id):
         instance = digitalriver.Instance.by_id(id)
         return self.template(
@@ -67,7 +67,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/config", "POST")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def do_config(self, id):
         instance = digitalriver.Instance.by_id(id)
         instance.apply()
@@ -86,7 +86,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/provision", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def new_provision(self, id):
         instance = digitalriver.Instance.by_id(id)
         return self.template(
@@ -99,7 +99,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/provision", "POST")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def create_provision(self, id):
         provision = digitalriver.Provision.new()
         try: provision.save()
@@ -118,7 +118,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/feature/delete", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def remove_feature(self, id):
         feature = self.field("feature", mandatory = True)
         instance = digitalriver.Instance.by_id(id)
@@ -134,7 +134,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/feature/rebuild", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def rebuild_feature(self, id):
         url = self.field("feature", mandatory = True)
         instance = digitalriver.Instance.by_id(id)
@@ -153,7 +153,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/sync", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def sync(self, id):
         self._ensure(id, force = True)
         instance = digitalriver.Instance.by_id(id)
@@ -167,7 +167,7 @@ class DropletController(appier.Controller):
         )
 
     @appier.route("/droplets/<int:id>/process", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def process(self, id):
         url = self.field("url", mandatory = True)
         info = appier.get(url)

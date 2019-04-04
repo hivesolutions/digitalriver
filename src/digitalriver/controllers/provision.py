@@ -8,7 +8,7 @@ import digitalriver
 class ProvisionController(appier.Controller):
 
     @appier.route("/provisions", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def list(self):
         return self.template(
             "provision/list.html.tpl",
@@ -16,7 +16,7 @@ class ProvisionController(appier.Controller):
         )
 
     @appier.route("/provisions.json", "GET", json = True)
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def list_json(self):
         object = appier.get_object(
             alias = True,
@@ -27,7 +27,7 @@ class ProvisionController(appier.Controller):
         return provisions
 
     @appier.route("/provisions/<str:pid>", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def show(self, pid):
         provision = digitalriver.Provision.get(pid = pid)
         return self.template(
@@ -38,7 +38,7 @@ class ProvisionController(appier.Controller):
         )
 
     @appier.route("/provisions/<str:pid>/log", "GET")
-    @appier.ensure("base")
+    @appier.ensure(token = "base")
     def log(self, pid):
         provision = digitalriver.Provision.get(pid = pid)
         return self.template(
