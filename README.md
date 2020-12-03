@@ -41,7 +41,7 @@ DigitalRiver is currently licensed under the [Apache License, Version 2.0](http:
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/hivesolutions/digitalriver.svg?branch=master)](https://travis-ci.org/hivesolutions/digitalriver)
+[![Build Status](https://travis-ci.com/hivesolutions/digitalriver.svg?branch=master)](https://travis-ci.com/hivesolutions/digitalriver)
 [![Coverage Status](https://coveralls.io/repos/hivesolutions/digitalriver/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/digitalriver?branch=master)
 [![PyPi Status](https://img.shields.io/pypi/v/digitalriver.svg)](https://pypi.python.org/pypi/digitalriver)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/)
