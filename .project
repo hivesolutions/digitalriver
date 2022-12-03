@@ -4,8 +4,8 @@
 	<comment></comment>
 	<projects>
 		<project>appier</project>
-		<project>appier_extras</project>
-		<project>digitalocean_api</project>
+		<project>appier-extras</project>
+		<project>digitalocean-api</project>
 		<project>pushi</project>
 	</projects>
 	<buildSpec>
