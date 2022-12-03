@@ -37,7 +37,7 @@ setuptools.setup(
     install_requires = [
         "pushi",
         "appier",
-        "digitalocean_api_python"
+        "digitalocean-api-python"
     ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
