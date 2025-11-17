@@ -3,5 +3,6 @@
 
 import appier_extras
 
+
 class DRBase(appier_extras.admin.Base):
     pass

@@ -7,8 +7,11 @@ import json
 
 import appier
 
-try: import paramiko
-except ImportError: paramiko = None
+try:
+    import paramiko
+except ImportError:
+    paramiko = None
+
 
 class Deployer(appier.Observable):
     """
@@ -39,18 +42,18 @@ class Deployer(appier.Observable):
 
     def __init__(
         self,
-        address = None,
-        username = None,
-        password = None,
-        id_rsa_path = None,
-        provision = None,
-        instance = None,
-        environment = None,
-        config_file = None,
-        data_directory = None,
-        base_directory = None,
-        temp_directory = None,
-        base_packages = None
+        address=None,
+        username=None,
+        password=None,
+        id_rsa_path=None,
+        provision=None,
+        instance=None,
+        environment=None,
+        config_file=None,
+        data_directory=None,
+        base_directory=None,
+        temp_directory=None,
+        base_packages=None,
     ):
         appier.Observable.__init__(self)
         cls = self.__class__
@@ -63,10 +66,12 @@ class Deployer(appier.Observable):
         self.password = password or self.password
         self.id_rsa_path = id_rsa_path or self.id_rsa_path
         self.provision = provision or None
-        self.instance = instance or (self.provision.get_instance() if
-            self.provision else None)
-        self.environment = environment or (self.provision.extra_config() if
-            self.provision else [])
+        self.instance = instance or (
+            self.provision.get_instance() if self.provision else None
+        )
+        self.environment = environment or (
+            self.provision.extra_config() if self.provision else []
+        )
         self.config_file = config_file or cls.CONFIG_FILE
         self.data_directory = data_directory or cls.DATA_DIRECTORY
         self.base_directory = base_directory or cls.BASE_DIRECTORY
@@ -75,7 +80,7 @@ class Deployer(appier.Observable):
         self.ssh = None
         self.sftp = None
 
-    def deploy_url(self, url, force = False):
+    def deploy_url(self, url, force=False):
         data = appier.get(url)
         is_dict = type(data) == dict
 
@@ -83,11 +88,13 @@ class Deployer(appier.Observable):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-        self.deploy_torus(url, data, force = force)
+        self.deploy_torus(url, data, force=force)
 
-    def deploy_torus(self, url, data, force = False):
+    def deploy_torus(self, url, data, force=False):
         skip = self.instance.has_provision(url) and not force
-        if skip: self.trigger("stdout", "Skipped '%s'" % url); return
+        if skip:
+            self.trigger("stdout", "Skipped '%s'" % url)
+            return
 
         build = data.get("build", None)
         build = self._to_absolute(url, build)
@@ -95,16 +102,17 @@ class Deployer(appier.Observable):
 
         for dependency in dependencies:
             dependency = self._to_absolute(url, dependency)
-            if self.instance.has_provision(dependency): continue
+            if self.instance.has_provision(dependency):
+                continue
             self.deploy_url(dependency)
 
-        self.build_all(data = data)
-        build and self.run_script(build, env = True)
+        self.build_all(data=data)
+        build and self.run_script(build, env=True)
         self.close_ssh()
 
-        self.trigger("deployed", url, data = data)
+        self.trigger("deployed", url, data=data)
 
-    def undeploy_url(self, url, force = False):
+    def undeploy_url(self, url, force=False):
         data = appier.get(url)
         is_dict = type(data) == dict
 
@@ -112,20 +120,22 @@ class Deployer(appier.Observable):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-        self.undeploy_torus(url, data, force = force)
+        self.undeploy_torus(url, data, force=force)
 
-    def undeploy_torus(self, url, data, force = False):
+    def undeploy_torus(self, url, data, force=False):
         skip = not self.instance.has_provision(url)
-        if skip: self.trigger("stdout", "Skipped '%s'" % url); return
+        if skip:
+            self.trigger("stdout", "Skipped '%s'" % url)
+            return
 
         destroy = data.get("destroy", None)
         destroy = self._to_absolute(url, destroy)
 
         self.destroy_feature()
-        destroy and self.run_script(destroy, env = True)
+        destroy and self.run_script(destroy, env=True)
         self.close_ssh()
 
-        self.trigger("undeployed", url, data = data)
+        self.trigger("undeployed", url, data=data)
 
     def sync_torus(self):
         self.build_base()
@@ -134,29 +144,31 @@ class Deployer(appier.Observable):
 
     def start_torus(self, url, data):
         start = data.get("start", None)
-        if not start: return
+        if not start:
+            return
         self.run_command(start)
 
     def stop_torus(self, url, data):
         stop = data.get("stop", None)
-        if not stop: return
+        if not stop:
+            return
         self.run_command(stop)
 
     def has_base(self):
-        return self.run_command(
-            "ls %s" % self.base_directory,
-            output = False,
-            raise_e = False
-        ) == 0
+        return (
+            self.run_command("ls %s" % self.base_directory, output=False, raise_e=False)
+            == 0
+        )
 
-    def build_all(self, data = None):
+    def build_all(self, data=None):
         self.build_base()
         self.build_exec()
         self.build_config()
-        self.build_feature(data = data)
+        self.build_feature(data=data)
 
     def build_base(self):
-        if self.has_base(): return
+        if self.has_base():
+            return
         base_path = "%s/%s" % (self.base_directory, self.config_file)
         data_path = "%s/%s" % (self.data_directory, self.config_file)
         base_s = " ".join(self.base_packages)
@@ -171,17 +183,22 @@ class Deployer(appier.Observable):
         scripts_path = os.path.join(base_path, "scripts")
         start_path = "%s/%s" % (self.base_directory, "start.sh")
         exec_s = "#!/bin/sh -e\n%s\nexit 0" % start_path
-        self.run_command("echo \"%s\" > /etc/rc.local" % exec_s)
+        self.run_command('echo "%s" > /etc/rc.local' % exec_s)
         self.copy_directory(scripts_path, self.base_directory)
         self.run_command("chmod +x %s/*.sh" % self.base_directory)
 
     def build_config(self):
         items = self.instance.config
         config_path = "%s/%s" % (self.base_directory, self.config_file)
-        config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
-        self.run_command("printf \"%s\" > %s" % (config_s, config_path))
+        config_s = "\\n".join(
+            [
+                "export " + key + "=\\${" + key + "-" + value + "}"
+                for key, value in items
+            ]
+        )
+        self.run_command('printf "%s" > %s' % (config_s, config_path))
 
-    def build_feature(self, data = None):
+    def build_feature(self, data=None):
         name = self.provision.get_name()
         items = self.provision.join_config()
         provision_directory = "%s/features/%s" % (self.base_directory, name)
@@ -189,16 +206,24 @@ class Deployer(appier.Observable):
         start_path = "%s/%s" % (provision_directory, "start.sh")
         stop_path = "%s/%s" % (provision_directory, "stop.sh")
         torus_path = "%s/%s" % (provision_directory, "torus.json")
-        config_s = "\\n".join(["export " + key + "=\\${" + key + "-" + value + "}" for key, value in items])
-        self.run_command("rm -rf %s && mkdir -p %s" % (provision_directory, provision_directory))
-        self.run_command("printf \"%s\" > %s" % (config_s, config_path))
-        if not data: return
+        config_s = "\\n".join(
+            [
+                "export " + key + "=\\${" + key + "-" + value + "}"
+                for key, value in items
+            ]
+        )
+        self.run_command(
+            "rm -rf %s && mkdir -p %s" % (provision_directory, provision_directory)
+        )
+        self.run_command('printf "%s" > %s' % (config_s, config_path))
+        if not data:
+            return
         start_s = data.get("start", "")
         stop_s = data.get("stop", "")
         data_s = json.dumps(data)
-        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (torus_path, data_s))
-        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (start_path, start_s))
-        self.run_command("cat > %s << \"EOF\"\n%s\nEOF\n" % (stop_path, stop_s))
+        self.run_command('cat > %s << "EOF"\n%s\nEOF\n' % (torus_path, data_s))
+        self.run_command('cat > %s << "EOF"\n%s\nEOF\n' % (start_path, start_s))
+        self.run_command('cat > %s << "EOF"\n%s\nEOF\n' % (stop_path, stop_s))
         self.run_command("chmod +x %s" % start_path)
         self.run_command("chmod +x %s" % stop_path)
 
@@ -207,26 +232,25 @@ class Deployer(appier.Observable):
         provision_directory = "%s/features/%s" % (self.base_directory, name)
         self.run_command("rm -rf %s" % provision_directory)
 
-    def run_script(self, url, env = False):
+    def run_script(self, url, env=False):
         name = url.rsplit("/", 1)[1]
-        self.run_command("rm -rf %s && mkdir -p %s" % (self.temp_directory, self.temp_directory))
+        self.run_command(
+            "rm -rf %s && mkdir -p %s" % (self.temp_directory, self.temp_directory)
+        )
         self.run_command("cd %s && wget %s" % (self.temp_directory, url))
-        self.run_command("cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name), env = env)
+        self.run_command(
+            "cd %s && chmod +x %s && ./%s" % (self.temp_directory, name, name), env=env
+        )
         self.run_command("rm -rf %s" % self.temp_directory)
 
     def run_command(
-        self,
-        command,
-        env = False,
-        output = True,
-        timeout = None,
-        bufsize = -1,
-        raise_e = True
+        self, command, env=False, output=True, timeout=None, bufsize=-1, raise_e=True
     ):
         # builds the prefix string containing the various environment
         # variables for the execution so that the command runs in context
-        prefix = " ".join([key + "=\"" + value + "\"" for key, value in self.environment])
-        if not env: prefix = ""
+        prefix = " ".join([key + '="' + value + '"' for key, value in self.environment])
+        if not env:
+            prefix = ""
 
         # retrieves the reference to the current ssh connection and
         # then creates a new channel stream for command execution
@@ -247,8 +271,10 @@ class Deployer(appier.Observable):
 
             while True:
                 data = stdout.readline()
-                if not data: break
-                if not output: continue
+                if not data:
+                    break
+                if not output:
+                    continue
                 sys.stdout.write(data)
                 sys.stdout.flush()
                 self.trigger("stdout", data)
@@ -257,8 +283,11 @@ class Deployer(appier.Observable):
         except Exception:
             channel.close()
 
-        if code == 0 or not raise_e: return code
-        raise RuntimeError("invalid return code '%d' in command execution '%s'" % (code, command))
+        if code == 0 or not raise_e:
+            return code
+        raise RuntimeError(
+            "invalid return code '%d' in command execution '%s'" % (code, command)
+        )
 
     def copy_directory(self, local_path, remote_path):
         names = os.listdir(local_path)
@@ -267,28 +296,33 @@ class Deployer(appier.Observable):
             _remote_path = "%s/%s" % (remote_path, name)
             self.copy_file(_local_path, _remote_path)
 
-    def copy_file(self, local_path, remote_path, replace = True, sftp = None):
+    def copy_file(self, local_path, remote_path, replace=True, sftp=None):
         owner = sftp == None
         sftp = sftp or self.get_sftp()
         try:
-            exists = self.exists_file(remote_path, sftp = sftp)
-            if exists and replace: sftp.remove(remote_path)
+            exists = self.exists_file(remote_path, sftp=sftp)
+            if exists and replace:
+                sftp.remove(remote_path)
             sftp.put(local_path, remote_path)
         finally:
             owner and self.close_sftp()
 
-    def exists_file(self, remote_path, sftp = None):
+    def exists_file(self, remote_path, sftp=None):
         owner = sftp == None
         sftp = sftp or self.get_sftp()
-        try: sftp.stat(remote_path)
-        except IOError: return False
-        finally: owner and self.close_sftp()
+        try:
+            sftp.stat(remote_path)
+        except IOError:
+            return False
+        finally:
+            owner and self.close_sftp()
         return True
 
-    def get_ssh(self, force = False):
+    def get_ssh(self, force=False):
         # in case the ssh connection already exists and no
         # forced is ensured, returns the current connection
-        if self.ssh and not force: return self.ssh
+        if self.ssh and not force:
+            return self.ssh
 
         # creates the proper ssh client with the remote host
         # adding the proper policies and then runs the connection
@@ -297,32 +331,38 @@ class Deployer(appier.Observable):
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.ssh.connect(
             self.address,
-            username = self.username,
-            password = self.password,
-            key_filename = self.id_rsa_path
+            username=self.username,
+            password=self.password,
+            key_filename=self.id_rsa_path,
         )
         return self.ssh
 
     def close_ssh(self):
-        if not self.ssh: return
+        if not self.ssh:
+            return
         self.ssh.close()
         self.ssh = None
 
-    def get_sftp(self, force = False):
-        if self.sftp and not force: return self.sftp
-        ssh = self.get_ssh(force = force)
+    def get_sftp(self, force=False):
+        if self.sftp and not force:
+            return self.sftp
+        ssh = self.get_ssh(force=force)
         self.sftp = ssh.open_sftp()
         return self.sftp
 
     def close_sftp(self):
-        if not self.sftp: return
+        if not self.sftp:
+            return
         self.sftp.close()
         self.sftp = None
 
     def _to_absolute(self, base, url):
-        if not base: return url
-        if not url: return url
+        if not base:
+            return url
+        if not url:
+            return url
         is_absolute = url.startswith("http://") or url.startswith("https://")
-        if is_absolute: return url
+        if is_absolute:
+            return url
         base = base.rsplit("/", 1)[0]
         return base + "/" + url

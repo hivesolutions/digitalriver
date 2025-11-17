@@ -9,50 +9,26 @@ from . import base
 from . import feature
 from . import provision
 
+
 class Instance(base.DRBase):
 
-    iid = appier.field(
-        index = True,
-        default = True
-    )
+    iid = appier.field(index=True, default=True)
 
-    address = appier.field(
-        index = True
-    )
+    address = appier.field(index=True)
 
-    names = appier.field(
-        type = list
-    )
+    names = appier.field(type=list)
 
-    values = appier.field(
-        type = list
-    )
+    values = appier.field(type=list)
 
-    config = appier.field(
-        type = list
-    )
+    config = appier.field(type=list)
 
-    droplet = appier.field(
-        type = dict
-    )
+    droplet = appier.field(type=dict)
 
-    features_m = appier.field(
-        type = dict
-    )
+    features_m = appier.field(type=dict)
 
-    features = appier.field(
-        type = appier.references(
-            feature.Feature,
-            name = "id"
-        )
-    )
+    features = appier.field(type=appier.references(feature.Feature, name="id"))
 
-    provisions = appier.field(
-        type = appier.references(
-            provision.Provision,
-            name = "pid"
-        )
-    )
+    provisions = appier.field(type=appier.references(provision.Provision, name="pid"))
 
     @classmethod
     def setup(cls):
@@ -65,10 +41,9 @@ class Instance(base.DRBase):
             appier.not_null("iid"),
             appier.not_empty("iid"),
             appier.not_duplicate("iid", cls._name()),
-
             appier.not_null("address"),
             appier.not_empty("address"),
-            appier.not_duplicate("address", cls._name())
+            appier.not_duplicate("address", cls._name()),
         ]
 
     @classmethod
@@ -92,11 +67,7 @@ class Instance(base.DRBase):
     def by_droplet(cls, droplet):
         address = droplet["networks"]["v4"][0]["ip_address"]
         iid = cls.to_iid(droplet["id"])
-        instance = cls.singleton(
-            iid = iid,
-            address = address,
-            form = False
-        )
+        instance = cls.singleton(iid=iid, address=address, form=False)
         instance.iid = iid
         instance.address = address
         instance.droplet = droplet
@@ -109,9 +80,10 @@ class Instance(base.DRBase):
 
     @classmethod
     def by_iid(cls, iid):
-        instance = cls.get(iid = iid, raise_e = False)
-        if instance: return instance
-        return cls.new(form = False)
+        instance = cls.get(iid=iid, raise_e=False)
+        if instance:
+            return instance
+        return cls.new(form=False)
 
     @classmethod
     def to_iid(cls, id):
@@ -120,19 +92,19 @@ class Instance(base.DRBase):
     def pre_validate(self):
         base.DRBase.pre_validate(self)
         is_valid = hasattr(self, "names") and hasattr(self, "values")
-        if not is_valid: self.names = self.values = []
+        if not is_valid:
+            self.names = self.values = []
 
     def pre_save(self):
         base.DRBase.pre_save(self)
         self.join_config()
 
-    @appier.operation(name = "Sync")
+    @appier.operation(name="Sync")
     def sync(self):
-        if not self.address: return
+        if not self.address:
+            return
         deployer = self.owner.get_deployer(
-            address = self.address,
-            username = "root",
-            instance = self
+            address=self.address, username="root", instance=self
         )
         deployer.sync_torus()
 
@@ -150,19 +122,22 @@ class Instance(base.DRBase):
 
     def add_feature(self, url, **kwargs):
         url_hash = self.fhash(url)
-        if url_hash in self.features_m: return
-        _feature = feature.Feature(url = url, **kwargs)
+        if url_hash in self.features_m:
+            return
+        _feature = feature.Feature(url=url, **kwargs)
         _feature.save()
         self.features_m[url_hash] = True
         self.features.append(_feature)
 
-    def remove_feature(self, url, delete = True):
+    def remove_feature(self, url, delete=True):
         url_hash = self.fhash(url)
-        if not url_hash in self.features_m: return
+        if not url_hash in self.features_m:
+            return
         _feature = self.get_feature(url)
         del self.features_m[url_hash]
         self.features.remove(_feature)
-        if delete: _feature.delete()
+        if delete:
+            _feature.delete()
 
     def get_id(self):
         id_s = self.iid[13:]
@@ -170,7 +145,8 @@ class Instance(base.DRBase):
 
     def get_feature(self, url):
         for feature in self.features:
-            if not feature.url == url: continue
+            if not feature.url == url:
+                continue
             return feature
 
     def has_feature(self, url):
