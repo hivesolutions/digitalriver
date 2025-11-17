@@ -1,3 +1,4 @@
 pushi
 appier
+appier-extras
 digitalocean-api-python
